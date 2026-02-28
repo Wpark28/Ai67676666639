@@ -1,8 +1,10 @@
 import SwiftUI
+import SwiftData
 
 /// View for connecting to Polar H10/H9 and monitoring heart rate in real time.
+/// Falls back to Apple Watch HR when no Polar strap is connected for 24/7 tracking.
 struct HeartRateMonitorView: View {
-    @StateObject private var hrService = BluetoothHRService()
+    @StateObject private var hrManager = HeartRateManager()
     @Query private var profiles: [AthleteProfile]
 
     @State private var isRecording = false
@@ -11,11 +13,15 @@ struct HeartRateMonitorView: View {
     @State private var timer: Timer?
 
     private var profile: AthleteProfile? { profiles.first }
+    private var hrService: BluetoothHRService { hrManager.bluetoothHR }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
+                    // HR Source indicator
+                    hrSourceBadge
+
                     if hrService.isConnected {
                         connectedView
                     } else if hrService.isScanning {
@@ -28,22 +34,63 @@ struct HeartRateMonitorView: View {
             }
             .navigationTitle("Heart Rate")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                // Start Apple Watch fallback immediately if Polar not connected
+                hrManager.startMonitoring()
+            }
+            .onDisappear {
+                if !isRecording {
+                    hrManager.stopMonitoring()
+                }
+            }
         }
+    }
+
+    // MARK: - HR Source Badge
+
+    private var hrSourceBadge: some View {
+        HStack(spacing: 6) {
+            Image(systemName: hrManager.heartRateSource.icon)
+                .foregroundStyle(hrManager.heartRateSource == .polar ? .red : .blue)
+            Text(hrManager.heartRateSource.rawValue)
+                .font(.caption.bold())
+            if hrManager.isActive && hrManager.currentHeartRate > 0 {
+                Text("\(hrManager.currentHeartRate) BPM")
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            if hrManager.heartRateSource == .appleWatch {
+                Text("24/7 Tracking")
+                    .font(.caption2)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(.blue.opacity(0.1), in: Capsule())
+                    .foregroundStyle(.blue)
+            }
+        }
+        .padding(10)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
     }
 
     // MARK: - Disconnected State
 
     private var disconnectedView: some View {
         VStack(spacing: 24) {
-            Image(systemName: "heart.circle")
-                .font(.system(size: 80))
-                .foregroundStyle(.red)
-                .symbolEffect(.pulse)
+            // Show Apple Watch live HR if available
+            if hrManager.heartRateSource == .appleWatch && hrManager.currentHeartRate > 0 {
+                appleWatchLiveHR
+            } else {
+                Image(systemName: "heart.circle")
+                    .font(.system(size: 80))
+                    .foregroundStyle(.red)
+                    .symbolEffect(.pulse)
+            }
 
             Text("Connect HR Monitor")
                 .font(.title2.bold())
 
-            Text("Connect your Polar H10, H9, or other Bluetooth heart rate monitor for real-time tracking during workouts.")
+            Text("Connect your Polar H10, H9, or other BLE monitor for workouts. Apple Watch provides 24/7 background heart rate tracking automatically.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -59,7 +106,7 @@ struct HeartRateMonitorView: View {
             Button {
                 hrService.startScanning()
             } label: {
-                Label("Scan for Devices", systemImage: "antenna.radiowaves.left.and.right")
+                Label("Scan for Polar / BLE Devices", systemImage: "antenna.radiowaves.left.and.right")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -76,7 +123,10 @@ struct HeartRateMonitorView: View {
                     supportedDevice("Polar H9")
                     supportedDevice("Polar OH1")
                 }
-                Text("Any Bluetooth LE heart rate monitor will work")
+                HStack(spacing: 12) {
+                    supportedDevice("Apple Watch")
+                }
+                Text("Apple Watch used automatically when no chest strap connected")
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
             }
@@ -84,6 +134,45 @@ struct HeartRateMonitorView: View {
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
         }
         .padding(.top, 20)
+    }
+
+    // MARK: - Apple Watch Live HR
+
+    private var appleWatchLiveHR: some View {
+        ZStack {
+            Circle()
+                .stroke(Color.blue.opacity(0.2), lineWidth: 12)
+                .frame(width: 160, height: 160)
+            Circle()
+                .trim(from: 0, to: watchHRFraction)
+                .stroke(Color.blue, style: StrokeStyle(lineWidth: 12, lineCap: .round))
+                .frame(width: 160, height: 160)
+                .rotationEffect(.degrees(-90))
+                .animation(.easeInOut(duration: 0.5), value: hrManager.currentHeartRate)
+
+            VStack(spacing: 4) {
+                Text("\(hrManager.currentHeartRate)")
+                    .font(.system(size: 48, weight: .bold, design: .rounded))
+                    .foregroundStyle(.blue)
+                    .contentTransition(.numericText())
+                    .animation(.default, value: hrManager.currentHeartRate)
+                Text("BPM")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                HStack(spacing: 4) {
+                    Image(systemName: "applewatch")
+                        .font(.caption2)
+                    Text("Apple Watch")
+                        .font(.caption2)
+                }
+                .foregroundStyle(.blue)
+            }
+        }
+    }
+
+    private var watchHRFraction: Double {
+        guard let p = profile else { return 0 }
+        return min(Double(hrManager.currentHeartRate) / Double(p.effectiveMaxHR), 1.0)
     }
 
     private func supportedDevice(_ name: String) -> some View {

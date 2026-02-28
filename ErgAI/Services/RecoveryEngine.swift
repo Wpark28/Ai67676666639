@@ -132,9 +132,9 @@ final class RecoveryEngine: ObservableObject {
             score = 50 // Default when no data available
         }
 
-        // Apply strain penalty from previous day
+        // Apply strain penalty from previous day (0-100 scale)
         // High previous-day strain slightly reduces today's recovery
-        let strainPenalty = max(0, (previousDayStrain - 12) * 1.5)
+        let strainPenalty = max(0, (previousDayStrain - 60) * 0.3)
         score = max(0, min(100, score - strainPenalty))
 
         return score
@@ -180,8 +180,7 @@ final class RecoveryEngine: ObservableObject {
 
     // MARK: - Strain Calculation
 
-    /// Calculate strain from a workout/activity.
-    /// Strain is on a 0-21 scale (logarithmic, like WHOOP).
+    /// Calculate strain from a workout/activity on a 0-100 scale.
     func calculateActivityStrain(
         durationMinutes: Int,
         averageHR: Int?,
@@ -190,65 +189,57 @@ final class RecoveryEngine: ObservableObject {
         activityType: String
     ) -> Double {
 
-        // Base strain from duration
         let durationHours = Double(durationMinutes) / 60.0
         var strain = 0.0
 
         if let avgHR = averageHR {
-            // HR-based strain: % of max HR determines intensity
+            // HR-based strain: % of max HR determines intensity (scaled to 0-100)
             let hrPercent = Double(avgHR) / Double(maxHeartRate)
 
-            // Strain accumulates faster at higher HR zones
-            // Zone 1 (<60%): minimal strain
-            // Zone 2 (60-70%): low strain
-            // Zone 3 (70-80%): moderate
-            // Zone 4 (80-90%): high
-            // Zone 5 (>90%): very high
             let intensityFactor: Double
-            if hrPercent < 0.5 { intensityFactor = 0.5 }
-            else if hrPercent < 0.6 { intensityFactor = 1.5 }
-            else if hrPercent < 0.7 { intensityFactor = 3.0 }
-            else if hrPercent < 0.8 { intensityFactor = 5.5 }
-            else if hrPercent < 0.9 { intensityFactor = 9.0 }
-            else { intensityFactor = 14.0 }
+            if hrPercent < 0.5 { intensityFactor = 2.5 }
+            else if hrPercent < 0.6 { intensityFactor = 7.0 }
+            else if hrPercent < 0.7 { intensityFactor = 14.0 }
+            else if hrPercent < 0.8 { intensityFactor = 26.0 }
+            else if hrPercent < 0.9 { intensityFactor = 43.0 }
+            else { intensityFactor = 67.0 }
 
             strain = durationHours * intensityFactor
 
             // Spike bonus for max HR peaks
             if let maxHRVal = maxHR {
                 let maxPercent = Double(maxHRVal) / Double(maxHeartRate)
-                if maxPercent > 0.9 { strain += 1.5 }
-                if maxPercent > 0.95 { strain += 1.0 }
+                if maxPercent > 0.9 { strain += 7 }
+                if maxPercent > 0.95 { strain += 5 }
             }
         } else {
             // No HR data — estimate from activity type and duration
             let typeFactor: Double
             switch activityType {
             case "rowing_hard", "interval", "2k", "test":
-                typeFactor = 8.0
+                typeFactor = 38.0
             case "rowing_moderate", "threshold":
-                typeFactor = 5.0
+                typeFactor = 24.0
             case "steady_state", "rowing_easy":
-                typeFactor = 3.0
+                typeFactor = 14.0
             case "gym_heavy":
-                typeFactor = 5.5
+                typeFactor = 26.0
             case "gym_moderate":
-                typeFactor = 4.0
+                typeFactor = 19.0
             case "walking":
-                typeFactor = 1.5
+                typeFactor = 7.0
             case "recovery":
-                typeFactor = 1.0
+                typeFactor = 5.0
             default:
-                typeFactor = 3.0
+                typeFactor = 14.0
             }
             strain = durationHours * typeFactor
         }
 
-        // Cap at 21
-        return min(strain, 21)
+        return min(strain, 100)
     }
 
-    /// Calculate strain from gym lifting specifically.
+    /// Calculate strain from gym lifting specifically (0-100 scale).
     func calculateGymStrain(
         totalVolume: Double,
         sets: Int,
@@ -259,14 +250,14 @@ final class RecoveryEngine: ObservableObject {
 
         let durationHours = Double(durationMinutes) / 60.0
 
-        // Volume-based component
-        let volumeStrain = log10(max(totalVolume, 1)) * 0.8
+        // Volume-based component (scaled to 0-100)
+        let volumeStrain = log10(max(totalVolume, 1)) * 3.8
 
         // Duration component
-        let durationStrain = durationHours * 2.5
+        let durationStrain = durationHours * 12.0
 
-        // Intensity from sets (more sets = harder session)
-        let setStrain = Double(sets) * 0.15
+        // Intensity from sets
+        let setStrain = Double(sets) * 0.7
 
         var strain = volumeStrain + durationStrain + setStrain
 
@@ -276,7 +267,7 @@ final class RecoveryEngine: ObservableObject {
             strain *= (0.5 + hrPercent)
         }
 
-        return min(strain, 21)
+        return min(strain, 100)
     }
 
     // MARK: - Energy Calculation
@@ -298,8 +289,8 @@ final class RecoveryEngine: ObservableObject {
         activityType: String
     ) -> Double {
 
-        // Base drain proportional to strain
-        var drain = strain * 3.0
+        // Base drain proportional to strain (strain is 0-100, energy is 0-100)
+        var drain = strain * 0.6
 
         // Duration multiplier — longer activities drain more even at low intensity
         let durationFactor = 1.0 + (Double(durationMinutes) / 120.0) * 0.3

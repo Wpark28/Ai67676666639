@@ -320,7 +320,7 @@ struct RecoveryDashboardView: View {
                     .stroke(Color.orange.opacity(0.15), lineWidth: 20)
                     .frame(width: 200, height: 200)
                 Circle()
-                    .trim(from: 0.25, to: 0.25 + (strain / 21.0) * 0.5)
+                    .trim(from: 0.25, to: 0.25 + (strain / 100.0) * 0.5)
                     .stroke(strainColor(strain), style: StrokeStyle(lineWidth: 20, lineCap: .round))
                     .frame(width: 200, height: 200)
                     .animation(.easeInOut(duration: 0.8), value: strain)
@@ -329,7 +329,7 @@ struct RecoveryDashboardView: View {
                     Text(String(format: "%.1f", strain))
                         .font(.system(size: 48, weight: .bold, design: .rounded))
                         .foregroundStyle(strainColor(strain))
-                    Text("/ 21.0")
+                    Text("/ 100")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Text(todayStatus?.strainCategory ?? "Light")
@@ -387,9 +387,9 @@ struct RecoveryDashboardView: View {
         let strain = todayStatus?.strainScore ?? 0
         let optimalStrain: ClosedRange<Double>
 
-        if recovery >= 67 { optimalStrain = 10...18 }
-        else if recovery >= 34 { optimalStrain = 5...12 }
-        else { optimalStrain = 0...6 }
+        if recovery >= 67 { optimalStrain = 40...85 }
+        else if recovery >= 34 { optimalStrain = 20...55 }
+        else { optimalStrain = 0...30 }
 
         let isOptimal = optimalStrain.contains(strain)
 
@@ -580,9 +580,9 @@ struct RecoveryDashboardView: View {
     }
 
     private func strainColor(_ strain: Double) -> Color {
-        if strain < 5 { return .blue }
-        if strain < 10 { return .green }
-        if strain < 15 { return .orange }
+        if strain < 25 { return .blue }
+        if strain < 50 { return .green }
+        if strain < 75 { return .orange }
         return .red
     }
 

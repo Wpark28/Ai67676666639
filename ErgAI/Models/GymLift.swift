@@ -81,7 +81,7 @@ final class GymSession {
     var averageHeartRate: Int?
 
     // Strain contribution
-    var strainScore: Double         // 0-21 scale like WHOOP
+    var strainScore: Double         // 0-100 scale
 
     init(sessionName: String, sessionType: String = "custom") {
         self.id = UUID()

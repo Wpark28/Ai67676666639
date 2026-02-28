@@ -29,9 +29,9 @@ final class DailyStatus {
     var wristTemperature: Double?       // deviation from baseline in °C
     var bodyTemperature: Double?        // if available
 
-    // Strain (0-21 scale, accumulates through the day)
+    // Strain (0-100 scale, accumulates through the day)
     var strainScore: Double
-    var strainBreakdown: [String: Double]   // "rowing": 8.5, "gym": 6.2, "walking": 2.1
+    var strainBreakdown: [String: Double]   // "rowing": 35, "gym": 25, "walking": 10
 
     // Energy (starts at 100, decreases with activity)
     var energyLevel: Double             // 0-100, starts at recovery score and decreases
@@ -83,9 +83,9 @@ final class DailyStatus {
     }
 
     var strainCategory: String {
-        if strainScore < 5 { return "Light" }
-        if strainScore < 10 { return "Moderate" }
-        if strainScore < 15 { return "High" }
+        if strainScore < 25 { return "Light" }
+        if strainScore < 50 { return "Moderate" }
+        if strainScore < 75 { return "High" }
         return "Overreaching"
     }
 
@@ -106,7 +106,7 @@ final class DailyStatus {
     /// Add strain from an activity.
     mutating func addStrain(_ strain: Double, source: String) {
         strainBreakdown[source] = (strainBreakdown[source] ?? 0) + strain
-        strainScore = min(21, strainBreakdown.values.reduce(0, +))
+        strainScore = min(100, strainBreakdown.values.reduce(0, +))
     }
 }
 

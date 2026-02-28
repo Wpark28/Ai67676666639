@@ -358,7 +358,7 @@ struct DashboardView: View {
             bodyStatusItem(
                 "Strain",
                 value: String(format: "%.1f", status.strainScore),
-                color: status.strainScore < 10 ? .blue : (status.strainScore < 15 ? .orange : .red),
+                color: status.strainScore < 40 ? .blue : (status.strainScore < 70 ? .orange : .red),
                 icon: "flame.fill"
             )
             bodyStatusItem(
