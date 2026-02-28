@@ -1,0 +1,3424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#000000">
+  <title>ErgAI</title>
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23007AFF'/><text x='50' y='68' text-anchor='middle' font-size='50' fill='white'>E</text></svg>">
+  <style>
+/* ===== ROOT & RESET ===== */
+:root {
+  --bg: #000000;
+  --bg-secondary: #1c1c1e;
+  --bg-tertiary: #2c2c2e;
+  --bg-card: rgba(44,44,46,0.6);
+  --text: #ffffff;
+  --text-secondary: #8e8e93;
+  --text-tertiary: #636366;
+  --blue: #007AFF;
+  --green: #34C759;
+  --red: #FF3B30;
+  --orange: #FF9500;
+  --yellow: #FFD60A;
+  --purple: #AF52DE;
+  --indigo: #5856D6;
+  --cyan: #32D74B;
+  --pink: #FF2D55;
+  --teal: #64D2FF;
+  --tab-height: 83px;
+  --nav-height: 56px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --radius: 16px;
+  --radius-sm: 12px;
+  --radius-xs: 8px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html, body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+body { position: fixed; width: 100%; }
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* ===== NAV BAR ===== */
+#nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  padding-top: calc(var(--safe-top) + 8px);
+  min-height: var(--nav-height);
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 0.5px solid rgba(255,255,255,0.08);
+  position: relative;
+  z-index: 100;
+}
+
+#nav-title {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.nav-btn {
+  position: absolute;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--blue);
+  font-size: 15px;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.nav-btn.hidden { display: none; }
+
+.nav-back {
+  position: absolute;
+  left: 16px;
+  right: auto;
+  background: none;
+  border: none;
+  color: var(--blue);
+  font-size: 15px;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ===== MAIN CONTENT ===== */
+#content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px;
+  padding-bottom: calc(var(--tab-height) + 16px);
+}
+
+/* ===== TAB BAR ===== */
+#tab-bar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  padding: 6px 0;
+  padding-bottom: calc(var(--safe-bottom) + 6px);
+  background: rgba(28,28,30,0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 0.5px solid rgba(255,255,255,0.08);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: var(--tab-height);
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 10px;
+  cursor: pointer;
+  padding: 4px 12px;
+  transition: color 0.2s;
+  flex: 1;
+}
+
+.tab svg { width: 24px; height: 24px; }
+.tab.active { color: var(--blue); }
+.tab:active { opacity: 0.6; }
+
+.capture-tab .capture-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: -4px;
+}
+
+.capture-tab .capture-icon svg { width: 22px; height: 22px; color: #fff; }
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 0.5px solid rgba(255,255,255,0.06);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.card-title {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.card-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  border-radius: 14px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: opacity 0.2s;
+  font-family: inherit;
+}
+
+.btn:active { opacity: 0.7; }
+.btn-blue { background: var(--blue); color: #fff; }
+.btn-red { background: var(--red); color: #fff; }
+.btn-green { background: var(--green); color: #fff; }
+.btn-gray { background: var(--bg-tertiary); color: var(--text); }
+.btn-outline { background: none; border: 1px solid var(--blue); color: var(--blue); }
+
+.btn-small {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  width: auto;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ===== RINGS / GAUGES ===== */
+.ring-container {
+  display: flex;
+  justify-content: center;
+  padding: 12px 0;
+}
+
+.ring {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ring svg { transform: rotate(-90deg); }
+
+.ring-label {
+  position: absolute;
+  text-align: center;
+}
+
+.ring-value {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.ring-caption {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.ring-status {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* ===== STATUS STRIP ===== */
+.status-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.status-item {
+  text-align: center;
+  padding: 10px 4px;
+}
+
+.status-icon { font-size: 14px; margin-bottom: 4px; }
+.status-value { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.status-label { font-size: 9px; color: var(--text-secondary); margin-top: 2px; }
+
+/* ===== STATS GRID ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 12px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+}
+
+.stat-icon { font-size: 20px; margin-bottom: 6px; }
+.stat-value { font-size: 17px; font-weight: 700; }
+.stat-label { font-size: 10px; color: var(--text-secondary); margin-top: 4px; }
+
+/* ===== SEGMENTED CONTROL ===== */
+.segmented {
+  display: flex;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  padding: 2px;
+  margin-bottom: 16px;
+}
+
+.segmented button {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 7px;
+  background: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.25s;
+}
+
+.segmented button.active {
+  background: var(--bg-secondary);
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ===== LIST ===== */
+.list-section {
+  margin-bottom: 20px;
+}
+
+.list-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0 0 8px 0;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border-radius: 0;
+  border-bottom: 0.5px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.list-item:first-of-type { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.list-item:last-of-type { border-radius: 0 0 var(--radius-sm) var(--radius-sm); border-bottom: none; }
+.list-item:only-of-type { border-radius: var(--radius-sm); }
+.list-item:active { background: var(--bg-tertiary); }
+
+.list-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.list-item-content { flex: 1; }
+.list-item-title { font-size: 16px; }
+.list-item-subtitle { font-size: 12px; color: var(--text-secondary); }
+.list-arrow { color: var(--text-tertiary); font-size: 14px; }
+
+/* ===== FORM ===== */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.form-input, .form-select {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: var(--radius-xs);
+  border: 0.5px solid rgba(255,255,255,0.1);
+  background: var(--bg-tertiary);
+  color: var(--text);
+  font-size: 16px;
+  font-family: inherit;
+  outline: none;
+}
+
+.form-input:focus, .form-select:focus {
+  border-color: var(--blue);
+}
+
+.form-input::placeholder { color: var(--text-tertiary); }
+
+/* ===== PROGRESS BARS ===== */
+.progress-bar {
+  height: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+
+/* ===== BATTERY ===== */
+.battery {
+  width: 100px;
+  height: 180px;
+  border: 3px solid;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.battery-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transition: height 0.8s ease;
+  border-radius: 0 0 9px 9px;
+}
+
+.battery-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+/* ===== BIOMETRIC GRID ===== */
+.bio-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.bio-card {
+  text-align: center;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.03);
+}
+
+.bio-icon { font-size: 22px; margin-bottom: 6px; }
+.bio-value { font-size: 16px; font-weight: 700; }
+.bio-title { font-size: 11px; font-weight: 600; margin-top: 4px; }
+.bio-detail { font-size: 9px; color: var(--text-tertiary); }
+
+/* ===== SLEEP STAGES ===== */
+.sleep-stage {
+  margin-bottom: 12px;
+}
+
+.sleep-stage-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.sleep-stage-label { font-weight: 600; }
+.sleep-stage-time { color: var(--text-secondary); }
+.sleep-stage-ideal { color: var(--text-tertiary); font-size: 10px; }
+
+/* ===== SCORE ROW ===== */
+.score-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 0.5px solid rgba(255,255,255,0.05);
+}
+
+.score-row:last-child { border-bottom: none; }
+
+.score-type {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--blue);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.score-split { font-size: 17px; font-weight: 700; }
+.score-info { flex: 1; }
+.score-meta { text-align: right; }
+.score-distance { font-size: 14px; }
+.score-date { font-size: 11px; color: var(--text-secondary); }
+
+/* ===== EXERCISE LIST ===== */
+.exercise-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 0.5px solid rgba(255,255,255,0.05);
+}
+
+.exercise-item:last-child { border-bottom: none; }
+
+/* ===== HR DISPLAY ===== */
+.hr-big {
+  font-size: 72px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  line-height: 1;
+}
+
+.hr-source-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+/* ===== CALORIE RING ===== */
+.macro-bar-container {
+  margin-bottom: 12px;
+}
+
+.macro-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+/* ===== RECOVERY HISTORY BAR CHART ===== */
+.history-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 80px;
+}
+
+.history-bar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.history-bar-fill {
+  width: 100%;
+  border-radius: 4px;
+  min-height: 4px;
+  transition: height 0.5s ease;
+}
+
+.history-bar-label { font-size: 9px; color: var(--text-secondary); }
+.history-bar-value { font-size: 10px; font-weight: 600; }
+
+/* ===== RECOMMENDATION ===== */
+.rec-card {
+  padding: 16px;
+}
+
+.rec-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.rec-icon { font-size: 22px; }
+.rec-title { font-size: 16px; font-weight: 600; flex: 1; }
+
+.rec-badge {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.rec-message {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+.rec-workout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 0.5px solid rgba(255,255,255,0.08);
+}
+
+.rec-workout-info { font-size: 12px; color: var(--text-secondary); }
+
+/* ===== TREND BARS ===== */
+.trend-bars {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  text-align: center;
+}
+
+.trend-bar { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+
+.trend-value { font-size: 22px; font-weight: 700; }
+
+.trend-fill-container {
+  width: 100%;
+  height: 60px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.trend-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-radius: 4px;
+  transition: height 0.5s ease;
+}
+
+.trend-label { font-size: 10px; color: var(--text-secondary); }
+
+/* ===== MODAL / SHEET ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.modal-sheet {
+  background: var(--bg-secondary);
+  border-radius: 16px 16px 0 0;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 20px;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.modal-handle {
+  width: 36px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--text-tertiary);
+  margin: 0 auto 16px;
+}
+
+/* ===== CAMERA ===== */
+#camera-video {
+  width: 100%;
+  border-radius: var(--radius);
+  background: #000;
+}
+
+#camera-canvas { display: none; }
+
+.camera-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 20px;
+}
+
+.shutter-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+}
+
+.shutter-btn::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s;
+}
+
+.shutter-btn:active::after { transform: scale(0.85); }
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+}
+
+.empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+.empty-title { font-size: 17px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+.empty-subtitle { font-size: 13px; }
+
+/* ===== GYM ===== */
+.set-row {
+  display: grid;
+  grid-template-columns: 40px 1fr 1fr 60px;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.set-number {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* ===== WATER TRACKER ===== */
+.water-dots {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  padding: 12px 0;
+}
+
+.water-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--blue);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.water-dot.filled { background: var(--blue); }
+
+/* ===== FOOD SEARCH ===== */
+.food-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  border-bottom: 0.5px solid rgba(255,255,255,0.05);
+  cursor: pointer;
+}
+
+.food-item:active { background: var(--bg-tertiary); }
+.food-name { font-size: 15px; }
+.food-cal { font-size: 13px; color: var(--text-secondary); }
+.food-macros { font-size: 11px; color: var(--text-tertiary); }
+
+/* ===== ANIMATION ===== */
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+.pulse { animation: pulse 1.5s ease infinite; }
+
+@keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+.fade-in { animation: fadeIn 0.3s ease; }
+
+/* ===== UTILITIES ===== */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.gap-4 { gap: 4px; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+.gap-16 { gap: 16px; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.w-full { width: 100%; }
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.mb-8 { margin-bottom: 8px; }
+.mb-16 { margin-bottom: 16px; }
+.hidden { display: none !important; }
+.text-sm { font-size: 13px; }
+.text-xs { font-size: 11px; }
+.text-xxs { font-size: 9px; }
+.font-bold { font-weight: 700; }
+.font-mono { font-variant-numeric: tabular-nums; }
+.opacity-50 { opacity: 0.5; }
+.color-blue { color: var(--blue); }
+.color-red { color: var(--red); }
+.color-green { color: var(--green); }
+.color-orange { color: var(--orange); }
+.color-yellow { color: var(--yellow); }
+.color-purple { color: var(--purple); }
+.color-indigo { color: var(--indigo); }
+.color-secondary { color: var(--text-secondary); }
+.color-tertiary { color: var(--text-tertiary); }
+.bg-blue { background: var(--blue); }
+.bg-red { background: var(--red); }
+.bg-green { background: var(--green); }
+.bg-orange { background: var(--orange); }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Navigation bar -->
+    <header id="nav-bar">
+      <h1 id="nav-title">ErgAI</h1>
+      <button id="nav-right-btn" class="nav-btn hidden"></button>
+    </header>
+
+    <!-- Main content area -->
+    <main id="content"></main>
+
+    <!-- Tab bar -->
+    <nav id="tab-bar">
+      <button class="tab active" data-tab="dashboard">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h1v7c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-7h1a1 1 0 00.7-1.7l-9-9a1 1 0 00-1.4 0l-9 9A1 1 0 003 13z"/></svg>
+        <span>Dashboard</span>
+      </button>
+      <button class="tab" data-tab="body">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <span>Body</span>
+      </button>
+      <button class="tab capture-tab" data-tab="capture">
+        <div class="capture-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15.2a3.2 3.2 0 100-6.4 3.2 3.2 0 000 6.4z"/><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+        </div>
+        <span>Capture</span>
+      </button>
+      <button class="tab" data-tab="coach">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+        <span>Coach</span>
+      </button>
+      <button class="tab" data-tab="more">
+        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+        <span>More</span>
+      </button>
+    </nav>
+  </div>
+
+  <script>
+// ===== IndexedDB Data Store =====
+// Persistent storage for all app data
+
+const DB_NAME = 'ergai';
+const DB_VERSION = 1;
+
+const Store = {
+  db: null,
+
+  async init() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('profile')) db.createObjectStore('profile', { keyPath: 'id' });
+        if (!db.objectStoreNames.contains('scores')) {
+          const s = db.createObjectStore('scores', { keyPath: 'id', autoIncrement: true });
+          s.createIndex('date', 'date');
+        }
+        if (!db.objectStoreNames.contains('dailyStatus')) {
+          const d = db.createObjectStore('dailyStatus', { keyPath: 'id', autoIncrement: true });
+          d.createIndex('date', 'date');
+        }
+        if (!db.objectStoreNames.contains('gymSessions')) {
+          const g = db.createObjectStore('gymSessions', { keyPath: 'id', autoIncrement: true });
+          g.createIndex('date', 'date');
+        }
+        if (!db.objectStoreNames.contains('calorieEntries')) {
+          const c = db.createObjectStore('calorieEntries', { keyPath: 'id', autoIncrement: true });
+          c.createIndex('date', 'date');
+        }
+        if (!db.objectStoreNames.contains('hrSessions')) {
+          const h = db.createObjectStore('hrSessions', { keyPath: 'id', autoIncrement: true });
+          h.createIndex('date', 'date');
+        }
+        if (!db.objectStoreNames.contains('baselines')) db.createObjectStore('baselines', { keyPath: 'id' });
+      };
+      req.onsuccess = (e) => { this.db = e.target.result; resolve(); };
+      req.onerror = () => reject(req.error);
+    });
+  },
+
+  // Generic CRUD
+  async put(storeName, data) {
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction(storeName, 'readwrite');
+      tx.objectStore(storeName).put(data);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  },
+
+  async get(storeName, key) {
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction(storeName, 'readonly');
+      const req = tx.objectStore(storeName).get(key);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  },
+
+  async getAll(storeName) {
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction(storeName, 'readonly');
+      const req = tx.objectStore(storeName).getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => reject(req.error);
+    });
+  },
+
+  async delete(storeName, key) {
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction(storeName, 'readwrite');
+      tx.objectStore(storeName).delete(key);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  },
+
+  async clear(storeName) {
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction(storeName, 'readwrite');
+      tx.objectStore(storeName).clear();
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  },
+
+  // ===== Profile =====
+  async getProfile() {
+    const all = await this.getAll('profile');
+    return all[0] || null;
+  },
+
+  async saveProfile(profile) {
+    profile.id = 'main';
+    return this.put('profile', profile);
+  },
+
+  // ===== Scores =====
+  async getScores() {
+    const all = await this.getAll('scores');
+    return all.sort((a, b) => new Date(b.date) - new Date(a.date));
+  },
+
+  async addScore(score) {
+    score.date = score.date || new Date().toISOString();
+    return this.put('scores', score);
+  },
+
+  // ===== Daily Status =====
+  async getDailyStatuses() {
+    const all = await this.getAll('dailyStatus');
+    return all.sort((a, b) => new Date(b.date) - new Date(a.date));
+  },
+
+  async saveDailyStatus(status) {
+    status.date = status.date || new Date().toISOString();
+    return this.put('dailyStatus', status);
+  },
+
+  async getTodayStatus() {
+    const all = await this.getDailyStatuses();
+    const today = new Date().toDateString();
+    return all.find(s => new Date(s.date).toDateString() === today) || null;
+  },
+
+  // ===== Gym Sessions =====
+  async getGymSessions() {
+    const all = await this.getAll('gymSessions');
+    return all.sort((a, b) => new Date(b.date) - new Date(a.date));
+  },
+
+  async saveGymSession(session) {
+    session.date = session.date || new Date().toISOString();
+    return this.put('gymSessions', session);
+  },
+
+  // ===== Calorie Entries =====
+  async getCalorieEntries() {
+    const all = await this.getAll('calorieEntries');
+    return all.sort((a, b) => new Date(b.date) - new Date(a.date));
+  },
+
+  async addCalorieEntry(entry) {
+    entry.date = entry.date || new Date().toISOString();
+    return this.put('calorieEntries', entry);
+  },
+
+  async getTodayCalories() {
+    const all = await this.getCalorieEntries();
+    const today = new Date().toDateString();
+    return all.filter(e => new Date(e.date).toDateString() === today);
+  },
+
+  // ===== Baselines =====
+  async getBaselines() {
+    return (await this.get('baselines', 'main')) || {
+      id: 'main',
+      hrvBaseline: 55,
+      rhrBaseline: 60,
+      respRateBaseline: 15,
+      spo2Baseline: 97,
+      sleepBaseline: 450,
+      tempBaseline: 0,
+      sampleCount: 0
+    };
+  },
+
+  async saveBaselines(baselines) {
+    baselines.id = 'main';
+    return this.put('baselines', baselines);
+  }
+};
+
+// ===== Default Profile =====
+function createDefaultProfile() {
+  return {
+    id: 'main',
+    name: '',
+    age: 20,
+    weight: 80,
+    height: 180,
+    gender: 'male',
+    experienceLevel: 'intermediate',
+    maxHR: 195,
+    restingHR: 60,
+    pr2k: null,
+    pr5k: null,
+    pr6k: null,
+    pr30min: null,
+    totalWorkouts: 0,
+    totalLifetimeMeters: 0,
+    currentWeekSessions: 0,
+    currentWeekMeters: 0,
+    streakDays: 0,
+    fitnessScore: 50,
+    fatigueScore: 30,
+    formScore: 20,
+    weeklyGoalSessions: 5,
+    weeklyGoalMeters: 50000,
+    calorieTarget: 2500,
+    proteinTarget: 150,
+    carbTarget: 300,
+    fatTarget: 80
+  };
+}
+
+// ===== Food Library =====
+const FoodLibrary = [
+  { name: 'Chicken Breast (6oz)', cal: 280, protein: 53, carbs: 0, fat: 6 },
+  { name: 'Brown Rice (1 cup)', cal: 215, protein: 5, carbs: 45, fat: 2 },
+  { name: 'Salmon (6oz)', cal: 350, protein: 40, carbs: 0, fat: 20 },
+  { name: 'Eggs (2 large)', cal: 140, protein: 12, carbs: 1, fat: 10 },
+  { name: 'Greek Yogurt (1 cup)', cal: 130, protein: 22, carbs: 8, fat: 1 },
+  { name: 'Banana', cal: 105, protein: 1, carbs: 27, fat: 0 },
+  { name: 'Oatmeal (1 cup)', cal: 300, protein: 10, carbs: 54, fat: 5 },
+  { name: 'Whey Protein Shake', cal: 150, protein: 30, carbs: 3, fat: 2 },
+  { name: 'Pasta (2 cups cooked)', cal: 400, protein: 14, carbs: 78, fat: 2 },
+  { name: 'Sweet Potato (medium)', cal: 103, protein: 2, carbs: 24, fat: 0 },
+  { name: 'Steak (8oz)', cal: 450, protein: 50, carbs: 0, fat: 28 },
+  { name: 'Avocado (whole)', cal: 322, protein: 4, carbs: 17, fat: 29 },
+  { name: 'Broccoli (2 cups)', cal: 60, protein: 4, carbs: 12, fat: 0 },
+  { name: 'Whole Milk (1 cup)', cal: 150, protein: 8, carbs: 12, fat: 8 },
+  { name: 'Peanut Butter (2 tbsp)', cal: 190, protein: 8, carbs: 6, fat: 16 },
+  { name: 'Turkey Sandwich', cal: 350, protein: 24, carbs: 35, fat: 12 },
+  { name: 'Protein Bar', cal: 250, protein: 20, carbs: 30, fat: 8 },
+  { name: 'Mixed Nuts (1/4 cup)', cal: 210, protein: 6, carbs: 8, fat: 18 },
+  { name: 'Apple', cal: 95, protein: 0, carbs: 25, fat: 0 },
+  { name: 'Tuna (1 can)', cal: 200, protein: 40, carbs: 0, fat: 2 }
+];
+
+// ===== Exercise Library =====
+const ExerciseLibrary = [
+  { name: 'Bench Press', muscle: 'chest', category: 'barbell' },
+  { name: 'Incline Bench Press', muscle: 'chest', category: 'barbell' },
+  { name: 'Dumbbell Bench Press', muscle: 'chest', category: 'dumbbell' },
+  { name: 'Cable Fly', muscle: 'chest', category: 'cable' },
+  { name: 'Push Ups', muscle: 'chest', category: 'bodyweight' },
+  { name: 'Barbell Row', muscle: 'back', category: 'barbell' },
+  { name: 'Deadlift', muscle: 'back', category: 'barbell' },
+  { name: 'Pull Ups', muscle: 'back', category: 'bodyweight' },
+  { name: 'Lat Pulldown', muscle: 'back', category: 'cable' },
+  { name: 'Seated Cable Row', muscle: 'back', category: 'cable' },
+  { name: 'Dumbbell Row', muscle: 'back', category: 'dumbbell' },
+  { name: 'Face Pulls', muscle: 'back', category: 'cable' },
+  { name: 'Squat', muscle: 'legs', category: 'barbell' },
+  { name: 'Front Squat', muscle: 'legs', category: 'barbell' },
+  { name: 'Leg Press', muscle: 'legs', category: 'machine' },
+  { name: 'Romanian Deadlift', muscle: 'legs', category: 'barbell' },
+  { name: 'Leg Extension', muscle: 'legs', category: 'machine' },
+  { name: 'Leg Curl', muscle: 'legs', category: 'machine' },
+  { name: 'Bulgarian Split Squat', muscle: 'legs', category: 'dumbbell' },
+  { name: 'Hip Thrust', muscle: 'legs', category: 'barbell' },
+  { name: 'Calf Raises', muscle: 'legs', category: 'machine' },
+  { name: 'Overhead Press', muscle: 'shoulders', category: 'barbell' },
+  { name: 'Lateral Raise', muscle: 'shoulders', category: 'dumbbell' },
+  { name: 'Rear Delt Fly', muscle: 'shoulders', category: 'dumbbell' },
+  { name: 'Barbell Curl', muscle: 'arms', category: 'barbell' },
+  { name: 'Dumbbell Curl', muscle: 'arms', category: 'dumbbell' },
+  { name: 'Hammer Curl', muscle: 'arms', category: 'dumbbell' },
+  { name: 'Tricep Pushdown', muscle: 'arms', category: 'cable' },
+  { name: 'Skull Crushers', muscle: 'arms', category: 'barbell' },
+  { name: 'Plank', muscle: 'core', category: 'bodyweight' },
+  { name: 'Hanging Leg Raise', muscle: 'core', category: 'bodyweight' },
+  { name: 'Cable Crunch', muscle: 'core', category: 'cable' },
+  { name: 'Ab Wheel Rollout', muscle: 'core', category: 'bodyweight' }
+];
+
+// ===== Recovery Engine =====
+const RecoveryEngine = {
+  async calculateRecoveryScore(data, baselines) {
+    let score = 0, totalWeight = 0;
+
+    // 1. HRV (30%)
+    if (data.hrv != null) {
+      const w = 0.30;
+      const ratio = data.hrv / Math.max(baselines.hrvBaseline, 1);
+      const s = Math.min(Math.max(ratio * 50 + 25, 0), 100);
+      score += s * w;
+      totalWeight += w;
+    }
+
+    // 2. Resting HR (20%)
+    if (data.rhr != null) {
+      const w = 0.20;
+      const ratio = baselines.rhrBaseline / Math.max(data.rhr, 1);
+      const s = Math.min(Math.max(ratio * 50 + 25, 0), 100);
+      score += s * w;
+      totalWeight += w;
+    }
+
+    // 3. Respiratory Rate (10%)
+    if (data.respiratoryRate != null) {
+      const w = 0.10;
+      const dev = Math.abs(data.respiratoryRate - baselines.respRateBaseline) / baselines.respRateBaseline;
+      const s = Math.max(100 - dev * 200, 0);
+      score += s * w;
+      totalWeight += w;
+    }
+
+    // 4. Blood Oxygen (10%)
+    if (data.bloodOxygen != null) {
+      const w = 0.10;
+      let s;
+      if (data.bloodOxygen >= 98) s = 100;
+      else if (data.bloodOxygen >= 96) s = 80;
+      else if (data.bloodOxygen >= 94) s = 60;
+      else if (data.bloodOxygen >= 92) s = 40;
+      else s = 20;
+      score += s * w;
+      totalWeight += w;
+    }
+
+    // 5. Sleep (25%)
+    const sleepW = 0.25;
+    const sleepS = this.calculateSleepScore(data.sleepMinutes || 0, data.deepSleepMinutes || 0, data.remSleepMinutes || 0);
+    score += sleepS * sleepW;
+    totalWeight += sleepW;
+
+    // 6. Wrist Temp (5%)
+    if (data.wristTemp != null) {
+      const w = 0.05;
+      const dev = Math.abs(data.wristTemp - baselines.tempBaseline);
+      let s;
+      if (dev < 0.2) s = 100;
+      else if (dev < 0.5) s = 75;
+      else if (dev < 1.0) s = 50;
+      else s = 25;
+      score += s * w;
+      totalWeight += w;
+    }
+
+    if (totalWeight > 0) score = score / totalWeight;
+    else score = 50;
+
+    // Strain penalty
+    const penalty = Math.max(0, ((data.previousDayStrain || 0) - 60) * 0.3);
+    score = Math.max(0, Math.min(100, score - penalty));
+
+    return Math.round(score * 10) / 10;
+  },
+
+  calculateSleepScore(totalMin, deepMin, remMin) {
+    let score = 0;
+
+    // Duration (60%)
+    let durScore;
+    if (totalMin >= 420 && totalMin <= 540) durScore = 100;
+    else if (totalMin >= 360) durScore = 80;
+    else if (totalMin >= 300) durScore = 60;
+    else if (totalMin >= 240) durScore = 40;
+    else durScore = Math.max(totalMin / 420 * 40, 0);
+    score += durScore * 0.6;
+
+    // Deep (25%)
+    const deepTarget = totalMin * 0.175;
+    const deepRatio = totalMin > 0 ? deepMin / deepTarget : 0;
+    score += Math.min(deepRatio * 100, 100) * 0.25;
+
+    // REM (15%)
+    const remTarget = totalMin * 0.225;
+    const remRatio = totalMin > 0 ? remMin / remTarget : 0;
+    score += Math.min(remRatio * 100, 100) * 0.15;
+
+    return Math.min(score, 100);
+  },
+
+  calculateActivityStrain(durationMinutes, avgHR, maxHR, maxHeartRate, activityType) {
+    const durationHours = durationMinutes / 60;
+    let strain = 0;
+
+    if (avgHR) {
+      const pct = avgHR / maxHeartRate;
+      let factor;
+      if (pct < 0.5) factor = 12;
+      else if (pct < 0.6) factor = 33;
+      else if (pct < 0.7) factor = 67;
+      else if (pct < 0.8) factor = 124;
+      else if (pct < 0.9) factor = 205;
+      else factor = 319;
+
+      strain = durationHours * factor;
+
+      if (maxHR) {
+        const maxPct = maxHR / maxHeartRate;
+        if (maxPct > 0.9) strain += 7;
+        if (maxPct > 0.95) strain += 5;
+      }
+    } else {
+      const factors = {
+        'rowing_hard': 180, 'interval': 180, '2k': 180, 'test': 180,
+        'rowing_moderate': 114, 'threshold': 114,
+        'steady_state': 67, 'rowing_easy': 67,
+        'gym_heavy': 124, 'gym_moderate': 90,
+        'walking': 33, 'recovery': 24
+      };
+      strain = durationHours * (factors[activityType] || 67);
+    }
+
+    return Math.min(strain, 100);
+  },
+
+  calculateGymStrain(totalVolume, sets, durationMinutes, avgHR, maxHeartRate) {
+    const durationHours = durationMinutes / 60;
+    const volumeStrain = Math.log10(Math.max(totalVolume, 1)) * 18;
+    const durationStrain = durationHours * 57;
+    const setStrain = sets * 3.3;
+    let strain = volumeStrain + durationStrain + setStrain;
+
+    if (avgHR) {
+      const pct = avgHR / maxHeartRate;
+      strain *= (0.5 + pct);
+    }
+
+    return Math.min(strain, 100);
+  },
+
+  calculateBaselineEnergy(recoveryScore, sleepScore) {
+    return Math.min(recoveryScore * 0.7 + sleepScore * 0.3, 100);
+  },
+
+  calculateEnergyDrain(strain, durationMinutes, currentEnergy, activityType) {
+    let drain = strain * 0.6;
+    const durationFactor = 1.0 + (durationMinutes / 120) * 0.3;
+    drain *= durationFactor;
+
+    const mods = { '2k': 1.3, 'test': 1.3, 'interval': 1.3, 'gym_heavy': 1.1, 'steady_state': 0.8, 'recovery': 0.5, 'walking': 0.5 };
+    if (mods[activityType]) drain *= mods[activityType];
+
+    if (currentEnergy < 30) drain *= 1.2;
+
+    return Math.min(drain, currentEnergy);
+  },
+
+  updateBaselines(baselines, data) {
+    const alpha = baselines.sampleCount < 14 ? 0.3 : 0.1;
+    baselines.sampleCount++;
+    if (data.hrv != null) baselines.hrvBaseline = baselines.hrvBaseline * (1 - alpha) + data.hrv * alpha;
+    if (data.rhr != null) baselines.rhrBaseline = baselines.rhrBaseline * (1 - alpha) + data.rhr * alpha;
+    if (data.respiratoryRate != null) baselines.respRateBaseline = baselines.respRateBaseline * (1 - alpha) + data.respiratoryRate * alpha;
+    if (data.bloodOxygen != null) baselines.spo2Baseline = baselines.spo2Baseline * (1 - alpha) + data.bloodOxygen * alpha;
+    if (data.sleepMinutes != null) baselines.sleepBaseline = baselines.sleepBaseline * (1 - alpha) + data.sleepMinutes * alpha;
+    if (data.wristTemp != null) baselines.tempBaseline = baselines.tempBaseline * (1 - alpha) + data.wristTemp * alpha;
+    return baselines;
+  }
+};
+
+// ===== AI Coach =====
+const AICoach = {
+  generateRecommendation(profile, scores, todayStatus) {
+    if (!profile) return null;
+
+    const recovery = todayStatus?.recoveryScore ?? 50;
+    const strain = todayStatus?.strainScore ?? 0;
+    const energy = todayStatus?.energyLevel ?? 70;
+    const sleepScore = todayStatus?.sleepScore ?? 50;
+
+    // Recovery-based logic
+    if (recovery < 33) {
+      return {
+        category: 'recovery',
+        title: 'Rest Day Recommended',
+        message: `Your recovery is at ${Math.round(recovery)}%. Your body needs time to repair. Take a rest day or do very light activity only — a 20-minute easy walk or gentle stretching. Focus on hydration and nutrition.`,
+        icon: '😴',
+        color: 'red'
+      };
+    }
+
+    if (recovery < 50) {
+      return {
+        category: 'recovery',
+        title: 'Easy Day — Active Recovery',
+        message: `Recovery at ${Math.round(recovery)}%. Keep it light today — a 30-40 min steady state row at rate 18-20, or easy mobility work. Stay below zone 2.`,
+        suggestedWorkout: { type: 'steady_state', duration: 35, split: '2:10', strokeRate: 18, intensity: 'Easy' },
+        icon: '🚣',
+        color: 'green'
+      };
+    }
+
+    if (energy < 30) {
+      return {
+        category: 'warning',
+        title: 'Energy Depleted',
+        message: `Energy is at ${Math.round(energy)}%. Even though recovery is decent, you've already done a lot today. Rest up and recharge for tomorrow.`,
+        icon: '🔋',
+        color: 'orange'
+      };
+    }
+
+    // Check recent scores for progress
+    const recent2ks = scores.filter(s => s.workoutType === '2k').slice(0, 3);
+
+    if (recovery >= 80 && energy >= 70) {
+      // High recovery = good day for hard work
+      if (profile.totalWorkouts % 7 === 0 && profile.totalWorkouts > 0) {
+        return {
+          category: 'milestone',
+          title: 'Test Piece Day',
+          message: `Recovery is ${Math.round(recovery)}% — excellent! Great day for a 2K test or hard intervals. Your body is primed for peak performance.`,
+          suggestedWorkout: { type: '2k', duration: 10, split: profile.pr2k ? formatSplit(profile.pr2k) : '1:50', strokeRate: 30, intensity: 'Max' },
+          icon: '🏆',
+          color: 'yellow'
+        };
+      }
+
+      return {
+        category: 'workout',
+        title: 'Hard Interval Day',
+        message: `Recovery at ${Math.round(recovery)}% with good energy. Push hard today — 8x500m intervals with 2 min rest, or a 6K at threshold pace.`,
+        suggestedWorkout: { type: 'interval', duration: 45, split: '1:45', strokeRate: 28, intensity: 'Hard' },
+        icon: '💪',
+        color: 'blue'
+      };
+    }
+
+    if (recovery >= 50) {
+      return {
+        category: 'workout',
+        title: 'Moderate Steady State',
+        message: `Recovery at ${Math.round(recovery)}%. Good day for a solid 45-60 minute steady state piece. Focus on technique and consistent splits.`,
+        suggestedWorkout: { type: 'steady_state', duration: 50, split: '2:05', strokeRate: 20, intensity: 'Moderate' },
+        icon: '🚣',
+        color: 'blue'
+      };
+    }
+
+    return {
+      category: 'workout',
+      title: 'Light Training Day',
+      message: 'Moderate recovery. Keep the intensity down — easy steady state or technique work.',
+      suggestedWorkout: { type: 'steady_state', duration: 30, split: '2:10', strokeRate: 18, intensity: 'Easy' },
+      icon: '🚣',
+      color: 'green'
+    };
+  },
+
+  generateWeeklyPlan(profile, todayStatus) {
+    if (!profile) return [];
+
+    const recovery = todayStatus?.recoveryScore ?? 60;
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const today = new Date().getDay();
+    const plan = [];
+
+    // Polarized model: 80% easy, 20% hard
+    const template = [
+      { day: 'Monday', type: 'Steady State', intensity: 'Easy', duration: 50, sr: 18 },
+      { day: 'Tuesday', type: 'Intervals', intensity: 'Hard', duration: 40, sr: 28 },
+      { day: 'Wednesday', type: 'Steady State', intensity: 'Easy', duration: 60, sr: 20 },
+      { day: 'Thursday', type: 'Gym + Easy Row', intensity: 'Moderate', duration: 45, sr: 18 },
+      { day: 'Friday', type: 'Steady State', intensity: 'Easy', duration: 50, sr: 20 },
+      { day: 'Saturday', type: 'Hard Pieces', intensity: 'Hard', duration: 35, sr: 30 },
+      { day: 'Sunday', type: 'Rest / Light', intensity: 'Recovery', duration: 0, sr: 0 }
+    ];
+
+    // Adjust based on recovery
+    for (const t of template) {
+      if (recovery < 40 && t.intensity === 'Hard') {
+        t.type = 'Easy Steady State';
+        t.intensity = 'Easy';
+        t.sr = 18;
+      }
+      plan.push(t);
+    }
+
+    return plan;
+  }
+};
+
+// ===== Utility Functions =====
+function formatSplit(seconds) {
+  if (!seconds) return '--';
+  const min = Math.floor(seconds / 60);
+  const sec = seconds - min * 60;
+  return `${min}:${sec < 10 ? '0' : ''}${sec.toFixed(1)}`;
+}
+
+function formatDuration(minutes) {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function formatTime(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+}
+
+function recoveryColor(score) {
+  if (score >= 67) return 'var(--green)';
+  if (score >= 34) return 'var(--yellow)';
+  return 'var(--red)';
+}
+
+function recoveryCategory(score) {
+  if (score >= 67) return 'Green';
+  if (score >= 34) return 'Yellow';
+  return 'Red';
+}
+
+function strainColor(strain) {
+  if (strain < 25) return 'var(--blue)';
+  if (strain < 50) return 'var(--green)';
+  if (strain < 75) return 'var(--orange)';
+  return 'var(--red)';
+}
+
+function strainCategory(strain) {
+  if (strain < 25) return 'Light';
+  if (strain < 50) return 'Moderate';
+  if (strain < 75) return 'High';
+  return 'Overload';
+}
+
+function energyColor(energy) {
+  if (energy >= 70) return 'var(--green)';
+  if (energy >= 40) return 'var(--yellow)';
+  if (energy >= 20) return 'var(--orange)';
+  return 'var(--red)';
+}
+
+function energyCategory(energy) {
+  if (energy >= 70) return 'High';
+  if (energy >= 40) return 'Moderate';
+  if (energy >= 20) return 'Low';
+  return 'Depleted';
+}
+
+function ringSVG(size, strokeWidth, progress, color, bgOpacity = 0.15) {
+  const r = (size - strokeWidth) / 2;
+  const c = Math.PI * 2 * r;
+  const offset = c * (1 - Math.min(Math.max(progress, 0), 1));
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-opacity="${bgOpacity}" stroke-width="${strokeWidth}"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round"
+      stroke-dasharray="${c}" stroke-dashoffset="${offset}" style="transition:stroke-dashoffset 0.8s ease"/>
+  </svg>`;
+}
+
+function gaugeArcSVG(size, strokeWidth, progress, color) {
+  const r = (size - strokeWidth) / 2;
+  const startAngle = 135;
+  const sweepAngle = 270;
+  const endAngle = startAngle + sweepAngle * Math.min(Math.max(progress, 0), 1);
+
+  function polarToCartesian(cx, cy, r, angleDeg) {
+    const rad = (angleDeg - 90) * Math.PI / 180;
+    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+  }
+
+  const cx = size / 2, cy = size / 2;
+
+  // Background arc
+  const bgStart = polarToCartesian(cx, cy, r, startAngle);
+  const bgEnd = polarToCartesian(cx, cy, r, startAngle + sweepAngle);
+  const bgLargeArc = sweepAngle > 180 ? 1 : 0;
+  const bgPath = `M ${bgStart.x} ${bgStart.y} A ${r} ${r} 0 ${bgLargeArc} 1 ${bgEnd.x} ${bgEnd.y}`;
+
+  // Value arc
+  const valEnd = polarToCartesian(cx, cy, r, endAngle);
+  const valSweep = sweepAngle * Math.min(Math.max(progress, 0), 1);
+  const valLargeArc = valSweep > 180 ? 1 : 0;
+  const valPath = `M ${bgStart.x} ${bgStart.y} A ${r} ${r} 0 ${valLargeArc} 1 ${valEnd.x} ${valEnd.y}`;
+
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <path d="${bgPath}" fill="none" stroke="${color}" stroke-opacity="0.15" stroke-width="${strokeWidth}" stroke-linecap="round"/>
+    <path d="${valPath}" fill="none" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round"
+      style="transition:d 0.8s ease"/>
+  </svg>`;
+}
+
+// ===== Web Bluetooth Heart Rate Service =====
+// Connects to Polar H10/H9 and other BLE HR monitors via Web Bluetooth API
+
+const BluetoothHR = {
+  device: null,
+  server: null,
+  characteristic: null,
+  connected: false,
+  currentHR: 0,
+  rrIntervals: [],
+  batteryLevel: null,
+  deviceName: null,
+  hrHistory: [],
+  onUpdate: null,    // callback(hr, rrIntervals)
+  onConnect: null,   // callback(deviceName)
+  onDisconnect: null, // callback()
+
+  isSupported() {
+    return !!navigator.bluetooth;
+  },
+
+  async scan() {
+    if (!this.isSupported()) {
+      throw new Error('Web Bluetooth is not supported in this browser. Use Chrome or Edge.');
+    }
+
+    try {
+      this.device = await navigator.bluetooth.requestDevice({
+        filters: [{ services: [0x180D] }], // Heart Rate Service
+        optionalServices: [0x180F]          // Battery Service
+      });
+
+      this.device.addEventListener('gattserverdisconnected', () => {
+        this.connected = false;
+        this.currentHR = 0;
+        if (this.onDisconnect) this.onDisconnect();
+      });
+
+      return this.device;
+    } catch (e) {
+      if (e.name === 'NotFoundError') return null; // User cancelled
+      throw e;
+    }
+  },
+
+  async connect() {
+    if (!this.device) throw new Error('No device selected');
+
+    this.server = await this.device.gatt.connect();
+    this.connected = true;
+    this.deviceName = this.device.name || 'HR Monitor';
+
+    // Heart Rate Service
+    try {
+      const hrService = await this.server.getPrimaryService(0x180D);
+      this.characteristic = await hrService.getCharacteristic(0x2A37);
+      this.characteristic.addEventListener('characteristicvaluechanged', (e) => this.handleHRData(e));
+      await this.characteristic.startNotifications();
+    } catch (e) {
+      console.error('HR service error:', e);
+    }
+
+    // Battery Service
+    try {
+      const batService = await this.server.getPrimaryService(0x180F);
+      const batChar = await batService.getCharacteristic(0x2A19);
+      const batValue = await batChar.readValue();
+      this.batteryLevel = batValue.getUint8(0);
+    } catch (e) {
+      // Battery service not available on all devices
+    }
+
+    if (this.onConnect) this.onConnect(this.deviceName);
+  },
+
+  disconnect() {
+    if (this.device && this.device.gatt.connected) {
+      this.device.gatt.disconnect();
+    }
+    this.connected = false;
+    this.currentHR = 0;
+    this.deviceName = null;
+    this.batteryLevel = null;
+  },
+
+  handleHRData(event) {
+    const value = event.target.value;
+    const flags = value.getUint8(0);
+    const is16Bit = flags & 0x01;
+    let hr, offset;
+
+    if (is16Bit) {
+      hr = value.getUint16(1, true);
+      offset = 3;
+    } else {
+      hr = value.getUint8(1);
+      offset = 2;
+    }
+
+    // Skip energy expended if present
+    if (flags & 0x08) offset += 2;
+
+    // Parse R-R intervals
+    const rr = [];
+    if (flags & 0x10) {
+      while (offset + 1 < value.byteLength) {
+        const raw = value.getUint16(offset, true);
+        rr.push(raw * 1000.0 / 1024.0);
+        offset += 2;
+      }
+    }
+
+    this.currentHR = hr;
+    this.rrIntervals = rr;
+    this.hrHistory.push({ time: Date.now(), hr });
+
+    // Keep last 5 min of history
+    const fiveMinAgo = Date.now() - 300000;
+    this.hrHistory = this.hrHistory.filter(h => h.time > fiveMinAgo);
+
+    if (this.onUpdate) this.onUpdate(hr, rr);
+  },
+
+  clearHistory() {
+    this.hrHistory = [];
+  },
+
+  getSessionStats() {
+    if (this.hrHistory.length === 0) return { avg: 0, max: 0, min: 0, count: 0 };
+    const hrs = this.hrHistory.map(h => h.hr);
+    return {
+      avg: Math.round(hrs.reduce((a, b) => a + b, 0) / hrs.length),
+      max: Math.max(...hrs),
+      min: Math.min(...hrs),
+      count: hrs.length
+    };
+  }
+};
+
+// ===== View Rendering =====
+// Each view function returns an HTML string and optionally attaches events after render.
+
+const Views = {
+
+  // =========================================
+  // DASHBOARD
+  // =========================================
+  async dashboard() {
+    const profile = await Store.getProfile();
+    const scores = await Store.getScores();
+    const status = await Store.getTodayStatus();
+    const rec = AICoach.generateRecommendation(profile, scores, status);
+
+    let html = '<div class="fade-in">';
+
+    // Header
+    html += `<div class="card">
+      <div class="flex items-center justify-between">
+        <div>
+          <div style="font-size:20px;font-weight:700">Hey, ${profile?.name || 'Rower'}</div>
+          <div class="text-sm color-secondary">${profile?.currentWeekSessions || 0} sessions this week &middot; ${(profile?.currentWeekMeters || 0).toLocaleString()}m</div>
+        </div>
+        ${profile?.streakDays > 0 ? `<div class="text-center"><div style="font-size:24px;font-weight:700;color:var(--orange)">${profile.streakDays}</div><div class="text-xxs color-secondary">day streak</div></div>` : ''}
+      </div>
+    </div>`;
+
+    // Body Status Strip
+    if (status) {
+      const rc = recoveryColor(status.recoveryScore);
+      const sc = status.strainScore < 40 ? 'var(--blue)' : status.strainScore < 70 ? 'var(--orange)' : 'var(--red)';
+      const ec = energyColor(status.energyLevel);
+      html += `<div class="card">
+        <div class="status-strip">
+          <div class="status-item">
+            <div class="status-icon" style="color:${rc}">&#10084;</div>
+            <div class="status-value" style="color:${rc}">${Math.round(status.recoveryScore)}%</div>
+            <div class="status-label">Recovery</div>
+          </div>
+          <div class="status-item">
+            <div class="status-icon" style="color:${sc}">&#128293;</div>
+            <div class="status-value" style="color:${sc}">${status.strainScore.toFixed(1)}</div>
+            <div class="status-label">Strain</div>
+          </div>
+          <div class="status-item">
+            <div class="status-icon" style="color:${ec}">&#9889;</div>
+            <div class="status-value" style="color:${ec}">${Math.round(status.energyLevel)}%</div>
+            <div class="status-label">Energy</div>
+          </div>
+          <div class="status-item">
+            <div class="status-icon" style="color:var(--indigo)">&#127769;</div>
+            <div class="status-value" style="color:var(--indigo)">${formatDuration(status.totalSleepMinutes || 0)}</div>
+            <div class="status-label">Sleep</div>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    // AI Recommendation
+    if (rec) {
+      const catColors = { workout: 'var(--blue)', recovery: 'var(--green)', technique: 'var(--purple)', milestone: 'var(--yellow)', warning: 'var(--red)' };
+      const c = catColors[rec.category] || 'var(--blue)';
+      html += `<div class="card rec-card">
+        <div class="rec-header">
+          <span class="rec-icon">${rec.icon || '🚣'}</span>
+          <span class="rec-title">${rec.title}</span>
+          <span class="rec-badge" style="background:${c}22;color:${c}">${rec.category}</span>
+        </div>
+        <div class="rec-message">${rec.message}</div>
+        ${rec.suggestedWorkout ? `<div class="rec-workout">
+          <div class="rec-workout-info">
+            ${rec.suggestedWorkout.split ? `${rec.suggestedWorkout.split} /500m` : ''}
+            ${rec.suggestedWorkout.strokeRate ? `&middot; ${rec.suggestedWorkout.strokeRate} s/m` : ''}
+            ${rec.suggestedWorkout.duration ? `&middot; ${rec.suggestedWorkout.duration} min` : ''}
+          </div>
+        </div>` : ''}
+      </div>`;
+    } else {
+      html += `<div class="card text-center" style="padding:24px">
+        <div style="font-size:36px;margin-bottom:8px">🧠</div>
+        <div class="font-bold">Get Today's Recommendation</div>
+        <div class="text-sm color-secondary mt-8">Set up your profile and log data to get AI coaching</div>
+      </div>`;
+    }
+
+    // Quick Stats
+    html += `<div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">🚣</div>
+        <div class="stat-value">${(profile?.totalLifetimeMeters || 0).toLocaleString()}</div>
+        <div class="stat-label">Total Meters</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔥</div>
+        <div class="stat-value">${profile?.totalWorkouts || 0}</div>
+        <div class="stat-label">Workouts</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🏆</div>
+        <div class="stat-value">${profile?.pr2k ? formatSplit(profile.pr2k) : '--'}</div>
+        <div class="stat-label">2K PR</div>
+      </div>
+    </div>`;
+
+    // Recent Scores
+    html += `<div class="card" style="margin-top:16px">
+      <div class="card-header">
+        <span class="card-title">Recent Scores</span>
+        <span class="text-sm color-blue" style="cursor:pointer" onclick="App.navigate('history')">See All</span>
+      </div>`;
+
+    if (scores.length === 0) {
+      html += `<div class="empty-state">
+        <div class="empty-icon">📸</div>
+        <div class="empty-title">No scores yet</div>
+        <div class="empty-subtitle">Capture your erg screen to get started</div>
+      </div>`;
+    } else {
+      for (const s of scores.slice(0, 3)) {
+        html += `<div class="score-row">
+          <div class="score-info">
+            <div class="score-type">${s.workoutType || '2k'}</div>
+            <div class="score-split">${formatSplit(s.splitSeconds)} /500m</div>
+          </div>
+          <div class="score-meta">
+            <div class="score-distance">${s.distance ? s.distance.toLocaleString() + 'm' : '--'}</div>
+            <div class="score-date">${formatDate(s.date)}</div>
+          </div>
+        </div>`;
+      }
+    }
+    html += '</div>';
+
+    // Fitness Trends
+    if (profile) {
+      html += `<div class="card" style="margin-top:16px">
+        <div class="card-title mb-8">Fitness & Form</div>
+        <div class="trend-bars">
+          <div class="trend-bar">
+            <div class="trend-value" style="color:var(--blue)">${Math.round(profile.fitnessScore)}</div>
+            <div class="trend-fill-container"><div class="trend-fill" style="height:${Math.min(profile.fitnessScore, 100)}%;background:var(--blue)"></div></div>
+            <div class="trend-label">Fitness</div>
+          </div>
+          <div class="trend-bar">
+            <div class="trend-value" style="color:var(--red)">${Math.round(profile.fatigueScore)}</div>
+            <div class="trend-fill-container"><div class="trend-fill" style="height:${Math.min(profile.fatigueScore, 100)}%;background:var(--red)"></div></div>
+            <div class="trend-label">Fatigue</div>
+          </div>
+          <div class="trend-bar">
+            <div class="trend-value" style="color:var(--green)">${Math.round(Math.max(profile.formScore + 50, 0))}</div>
+            <div class="trend-fill-container"><div class="trend-fill" style="height:${Math.min(Math.max(profile.formScore + 50, 0), 100)}%;background:var(--green)"></div></div>
+            <div class="trend-label">Form</div>
+          </div>
+        </div>
+        <div class="text-xs color-secondary mt-8">Form = Fitness - Fatigue. Higher form = ready to race.</div>
+      </div>`;
+    }
+
+    html += '</div>';
+    return html;
+  },
+
+  // =========================================
+  // BODY / RECOVERY DASHBOARD
+  // =========================================
+  async body(subTab = 'recovery') {
+    const status = await Store.getTodayStatus();
+    const statuses = await Store.getDailyStatuses();
+
+    let html = '<div class="fade-in">';
+
+    // Segmented control
+    html += `<div class="segmented">
+      <button ${subTab === 'recovery' ? 'class="active"' : ''} onclick="App.renderBody('recovery')">Recovery</button>
+      <button ${subTab === 'sleep' ? 'class="active"' : ''} onclick="App.renderBody('sleep')">Sleep</button>
+      <button ${subTab === 'strain' ? 'class="active"' : ''} onclick="App.renderBody('strain')">Strain</button>
+      <button ${subTab === 'energy' ? 'class="active"' : ''} onclick="App.renderBody('energy')">Energy</button>
+    </div>`;
+
+    if (subTab === 'recovery') {
+      html += this.recoveryTab(status, statuses);
+    } else if (subTab === 'sleep') {
+      html += this.sleepTab(status);
+    } else if (subTab === 'strain') {
+      html += this.strainTab(status);
+    } else if (subTab === 'energy') {
+      html += this.energyTab(status);
+    }
+
+    html += '</div>';
+    return html;
+  },
+
+  recoveryTab(status, statuses) {
+    const score = status?.recoveryScore ?? 0;
+    const cat = recoveryCategory(score);
+    const color = recoveryColor(score);
+
+    let html = '';
+
+    // Recovery Ring
+    html += `<div class="ring-container">
+      <div class="ring">
+        ${ringSVG(200, 20, score / 100, color)}
+        <div class="ring-label">
+          <div class="ring-value" style="font-size:56px;color:${color}">${Math.round(score)}</div>
+          <div class="ring-caption">Recovery</div>
+          <div class="ring-status" style="color:${color}">${cat}</div>
+        </div>
+      </div>
+    </div>`;
+
+    // Recommendation
+    const recText = score >= 67 ? 'Recovery is strong. Great day for hard training or testing.' : score >= 34 ? 'Moderate recovery. Stick to steady state or easy work today.' : 'Low recovery. Rest day or very light activity recommended.';
+    const recIcon = score >= 67 ? '&#9989;' : score >= 34 ? '&#9888;' : '&#10060;';
+    html += `<div class="card" style="background:${color}11">
+      <div class="flex items-center gap-12">
+        <span style="font-size:24px">${recIcon}</span>
+        <span class="text-sm color-secondary">${recText}</span>
+      </div>
+    </div>`;
+
+    // Biometrics Grid
+    html += `<div class="card">
+      <div class="flex items-center gap-8 mb-8">
+        <span style="color:var(--blue)">&#9201;</span>
+        <span class="text-sm font-bold">Apple Watch Ultra Data</span>
+      </div>
+      <div class="bio-grid">
+        <div class="bio-card">
+          <div class="bio-icon" style="color:var(--purple)">&#128147;</div>
+          <div class="bio-value">${status?.hrv != null ? Math.round(status.hrv) + ' ms' : '--'}</div>
+          <div class="bio-title">HRV</div>
+          <div class="bio-detail">Heart Rate Variability</div>
+        </div>
+        <div class="bio-card">
+          <div class="bio-icon" style="color:var(--red)">&#10084;</div>
+          <div class="bio-value">${status?.rhr != null ? Math.round(status.rhr) + ' bpm' : '--'}</div>
+          <div class="bio-title">Resting HR</div>
+          <div class="bio-detail">Lower is better</div>
+        </div>
+        <div class="bio-card">
+          <div class="bio-icon" style="color:var(--cyan)">&#129729;</div>
+          <div class="bio-value">${status?.bloodOxygen != null ? status.bloodOxygen.toFixed(1) + '%' : '--'}</div>
+          <div class="bio-title">Blood Oxygen</div>
+          <div class="bio-detail">SpO2</div>
+        </div>
+        <div class="bio-card">
+          <div class="bio-icon" style="color:var(--green)">&#127811;</div>
+          <div class="bio-value">${status?.respiratoryRate != null ? status.respiratoryRate.toFixed(1) + ' br/m' : '--'}</div>
+          <div class="bio-title">Respiratory</div>
+          <div class="bio-detail">Breaths per minute</div>
+        </div>
+        <div class="bio-card">
+          <div class="bio-icon" style="color:var(--orange)">&#127777;</div>
+          <div class="bio-value">${status?.wristTemp != null ? (status.wristTemp >= 0 ? '+' : '') + status.wristTemp.toFixed(1) + '°C' : '--'}</div>
+          <div class="bio-title">Wrist Temp</div>
+          <div class="bio-detail">Deviation</div>
+        </div>
+        <div class="bio-card">
+          <div class="bio-icon" style="color:var(--blue)">&#128694;</div>
+          <div class="bio-value">${(status?.steps || 0).toLocaleString()}</div>
+          <div class="bio-title">Steps</div>
+          <div class="bio-detail">Today</div>
+        </div>
+      </div>
+    </div>`;
+
+    // 7-Day Recovery History
+    const last7 = (statuses || []).slice(0, 7).reverse();
+    if (last7.length > 1) {
+      html += `<div class="card">
+        <div class="card-title mb-8">7-Day Recovery</div>
+        <div class="history-bars">
+          ${last7.map(s => {
+            const c = recoveryColor(s.recoveryScore);
+            const d = new Date(s.date);
+            const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
+            return `<div class="history-bar">
+              <div class="history-bar-value" style="color:${c}">${Math.round(s.recoveryScore)}</div>
+              <div class="history-bar-fill" style="height:${Math.max(s.recoveryScore * 0.6, 4)}px;background:${c}"></div>
+              <div class="history-bar-label">${dayName}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+    }
+
+    return html;
+  },
+
+  sleepTab(status) {
+    const sleepScore = status?.sleepScore ?? 0;
+    const totalMin = status?.totalSleepMinutes ?? 0;
+    const deepMin = status?.deepSleepMinutes ?? 0;
+    const remMin = status?.remSleepMinutes ?? 0;
+    const lightMin = status?.lightSleepMinutes ?? 0;
+    const awakeMin = status?.awakeMinutes ?? 0;
+
+    let html = '';
+
+    // Sleep Score Ring
+    html += `<div class="ring-container">
+      <div class="ring">
+        ${ringSVG(160, 16, sleepScore / 100, 'var(--indigo)')}
+        <div class="ring-label">
+          <div class="ring-value" style="font-size:44px;color:var(--indigo)">${Math.round(sleepScore)}</div>
+          <div class="ring-caption">Sleep Score</div>
+        </div>
+      </div>
+    </div>`;
+
+    // Duration
+    html += `<div class="text-center mb-16">
+      <div style="font-size:28px;font-weight:700">${formatDuration(totalMin)}</div>
+      <div class="text-sm color-secondary">Total Sleep</div>
+    </div>`;
+
+    // Sleep Stages
+    html += '<div class="card"><div class="card-title mb-8">Sleep Stages</div>';
+    const stages = [
+      { label: 'Deep', min: deepMin, color: 'var(--indigo)', ideal: '1-2h' },
+      { label: 'REM', min: remMin, color: 'var(--purple)', ideal: '1.5-2h' },
+      { label: 'Light', min: lightMin, color: 'rgba(88,86,214,0.5)', ideal: '3-4h' },
+      { label: 'Awake', min: awakeMin, color: 'var(--orange)', ideal: '<30m' }
+    ];
+
+    for (const s of stages) {
+      const frac = totalMin > 0 ? s.min / totalMin : 0;
+      html += `<div class="sleep-stage">
+        <div class="sleep-stage-header">
+          <span class="sleep-stage-label" style="color:${s.color}">${s.label}</span>
+          <span class="sleep-stage-time">${Math.floor(s.min / 60)}h ${s.min % 60}m</span>
+          <span class="sleep-stage-ideal">(ideal: ${s.ideal})</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${frac * 100}%;background:${s.color}"></div></div>
+      </div>`;
+    }
+    html += '</div>';
+
+    // Sleep Tip
+    const hours = totalMin / 60;
+    let tip;
+    if (hours < 6) tip = "Less than 6 hours significantly impacts recovery, HRV, and performance. Aim for 7-9 hours.";
+    else if (hours < 7) tip = "Close to minimum. Athletes perform best with 7-9 hours.";
+    else if (hours <= 9) tip = "Great sleep duration! Check deep and REM for quality.";
+    else tip = "Over 9 hours can indicate high fatigue. Monitor how you feel.";
+
+    html += `<div class="card" style="background:var(--indigo)08">
+      <div class="flex items-center gap-8">
+        <span>&#127769;</span>
+        <span class="text-sm color-secondary">${tip}</span>
+      </div>
+    </div>`;
+
+    return html;
+  },
+
+  strainTab(status) {
+    const strain = status?.strainScore ?? 0;
+    const color = strainColor(strain);
+    const cat = strainCategory(strain);
+
+    let html = '';
+
+    // Strain Gauge
+    html += `<div class="ring-container">
+      <div class="ring">
+        ${gaugeArcSVG(200, 20, strain / 100, color)}
+        <div class="ring-label">
+          <div class="ring-value" style="font-size:48px;color:${color}">${strain.toFixed(1)}</div>
+          <div class="ring-caption">/ 100</div>
+          <div class="ring-status" style="color:${color}">${cat}</div>
+        </div>
+      </div>
+    </div>`;
+
+    // Activity Stats
+    html += `<div class="flex gap-8" style="margin-bottom:16px">
+      <div class="stat-card" style="flex:1">
+        <div class="stat-icon" style="color:var(--red)">&#128293;</div>
+        <div class="stat-value">${status?.activeCalories ?? 0}</div>
+        <div class="stat-label">Active Cal</div>
+      </div>
+      <div class="stat-card" style="flex:1">
+        <div class="stat-icon" style="color:var(--green)">&#127939;</div>
+        <div class="stat-value">${status?.activeMinutes ?? 0}</div>
+        <div class="stat-label">Active Min</div>
+      </div>
+      <div class="stat-card" style="flex:1">
+        <div class="stat-icon" style="color:var(--blue)">&#128095;</div>
+        <div class="stat-value">${(status?.steps ?? 0).toLocaleString()}</div>
+        <div class="stat-label">Steps</div>
+      </div>
+    </div>`;
+
+    // Strain vs Recovery Balance
+    const recovery = status?.recoveryScore ?? 50;
+    let optLow, optHigh;
+    if (recovery >= 67) { optLow = 40; optHigh = 85; }
+    else if (recovery >= 34) { optLow = 20; optHigh = 55; }
+    else { optLow = 0; optHigh = 30; }
+
+    const isOptimal = strain >= optLow && strain <= optHigh;
+    const balanceMsg = isOptimal ? 'Strain is well-matched to your recovery.' : strain > optHigh ? 'Strain is high relative to recovery. Consider easing off.' : 'You have more capacity today. Room for harder training.';
+
+    html += `<div class="card">
+      <div class="card-title mb-8">Strain vs Recovery Balance</div>
+      <div class="flex items-center gap-8">
+        <span style="color:${isOptimal ? 'var(--green)' : 'var(--orange)'};font-size:20px">${isOptimal ? '&#9989;' : '&#9888;'}</span>
+        <span class="text-sm color-secondary">${balanceMsg}</span>
+      </div>
+      <div class="text-xs color-tertiary mt-8">Optimal strain range for today: ${optLow}-${optHigh}</div>
+    </div>`;
+
+    return html;
+  },
+
+  energyTab(status) {
+    const energy = status?.energyLevel ?? 100;
+    const baseline = status?.energyBaseline ?? 100;
+    const color = energyColor(energy);
+    const cat = energyCategory(energy);
+
+    let html = '';
+
+    // Battery
+    html += `<div style="padding:16px 0">
+      <div class="battery" style="border-color:${color}50">
+        <div class="battery-fill" style="height:${Math.max(energy, 2)}%;background:linear-gradient(to top, ${color}, ${color}aa)"></div>
+        <div class="battery-label">
+          <div style="font-size:36px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.5)">${Math.round(energy)}%</div>
+          <div style="font-size:12px;font-weight:600;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.5)">${cat}</div>
+        </div>
+      </div>
+      <div class="text-center text-sm color-secondary mt-8">Started at ${Math.round(baseline)}% based on recovery</div>
+    </div>`;
+
+    // Energy Drains
+    if (status?.energyDrains?.length > 0) {
+      html += '<div class="card"><div class="card-title mb-8">Energy Drains</div>';
+      for (const d of status.energyDrains) {
+        html += `<div class="flex items-center justify-between" style="padding:8px 0;border-bottom:0.5px solid rgba(255,255,255,0.05)">
+          <div>
+            <div class="text-sm">${d.source}</div>
+            <div class="text-xs color-secondary">${d.durationMinutes} min</div>
+          </div>
+          <div class="flex items-center gap-8">
+            <span class="text-sm font-bold color-red">-${Math.round(d.amount)}%</span>
+            <span class="text-xs color-secondary">${formatTime(d.time)}</span>
+          </div>
+        </div>`;
+      }
+      html += '</div>';
+    }
+
+    // Energy Tip
+    let tip, tipIcon;
+    if (energy >= 70) { tip = "Energy is high. Great time for a hard workout or test piece."; tipIcon = "&#9889;"; }
+    else if (energy >= 40) { tip = "Moderate energy. Steady state or moderate gym session would be appropriate."; tipIcon = "&#9196;"; }
+    else if (energy >= 20) { tip = "Energy is low. Light activity only — easy row, walk, or mobility."; tipIcon = "&#9196;"; }
+    else { tip = "Energy depleted. Rest is the priority."; tipIcon = "&#128267;"; }
+
+    html += `<div class="card" style="background:${color}08">
+      <div class="flex items-center gap-8">
+        <span>${tipIcon}</span>
+        <span class="text-sm color-secondary">${tip}</span>
+      </div>
+    </div>`;
+
+    return html;
+  },
+
+  // =========================================
+  // CAPTURE
+  // =========================================
+  capture() {
+    return `<div class="fade-in">
+      <div class="text-center" style="padding:20px 0">
+        <div style="font-size:48px;margin-bottom:12px">📸</div>
+        <div style="font-size:20px;font-weight:700;margin-bottom:8px">Capture Erg Score</div>
+        <div class="text-sm color-secondary mb-16">Take a photo of your Concept2 monitor or enter scores manually</div>
+      </div>
+
+      <video id="camera-video" autoplay playsinline style="display:none;width:100%;border-radius:16px;margin-bottom:16px"></video>
+      <canvas id="camera-canvas"></canvas>
+      <img id="captured-img" style="display:none;width:100%;border-radius:16px;margin-bottom:16px" />
+
+      <div class="flex gap-8 mb-16">
+        <button class="btn btn-blue" onclick="App.startCamera()" id="btn-camera">
+          <span>&#128247;</span> Take Photo
+        </button>
+        <button class="btn btn-gray" onclick="App.uploadPhoto()">
+          <span>&#128194;</span> Upload
+        </button>
+      </div>
+
+      <input type="file" id="photo-upload" accept="image/*" style="display:none" />
+
+      <div id="capture-result" style="display:none">
+        <div class="card">
+          <div class="card-title mb-8">Detected Score</div>
+          <div id="ocr-result"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title mb-8">Manual Entry</div>
+        <div class="form-group">
+          <label class="form-label">Workout Type</label>
+          <select class="form-select" id="score-type">
+            <option value="2k">2K Test</option>
+            <option value="5k">5K</option>
+            <option value="6k">6K</option>
+            <option value="10k">10K</option>
+            <option value="30min">30 Min</option>
+            <option value="60min">60 Min</option>
+            <option value="interval">Interval</option>
+            <option value="steady_state">Steady State</option>
+          </select>
+        </div>
+        <div class="flex gap-8">
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Time (mm:ss.s)</label>
+            <input class="form-input" type="text" id="score-time" placeholder="7:00.0">
+          </div>
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Distance (m)</label>
+            <input class="form-input" type="number" id="score-distance" placeholder="2000">
+          </div>
+        </div>
+        <div class="flex gap-8">
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Split (/500m)</label>
+            <input class="form-input" type="text" id="score-split" placeholder="1:45.0">
+          </div>
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Stroke Rate</label>
+            <input class="form-input" type="number" id="score-sr" placeholder="28">
+          </div>
+        </div>
+        <div class="flex gap-8">
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Avg HR</label>
+            <input class="form-input" type="number" id="score-hr" placeholder="175">
+          </div>
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Calories</label>
+            <input class="form-input" type="number" id="score-cal" placeholder="">
+          </div>
+        </div>
+        <button class="btn btn-blue mt-8" onclick="App.saveScore()">Save Score</button>
+      </div>
+    </div>`;
+  },
+
+  // =========================================
+  // COACH
+  // =========================================
+  async coach(subTab = 'today') {
+    const profile = await Store.getProfile();
+    const scores = await Store.getScores();
+    const status = await Store.getTodayStatus();
+
+    let html = '<div class="fade-in">';
+
+    html += `<div class="segmented">
+      <button ${subTab === 'today' ? 'class="active"' : ''} onclick="App.renderCoach('today')">Today</button>
+      <button ${subTab === 'weekly' ? 'class="active"' : ''} onclick="App.renderCoach('weekly')">Weekly Plan</button>
+      <button ${subTab === 'insights' ? 'class="active"' : ''} onclick="App.renderCoach('insights')">Insights</button>
+    </div>`;
+
+    if (subTab === 'today') {
+      const rec = AICoach.generateRecommendation(profile, scores, status);
+      if (rec) {
+        const catColors = { workout: 'var(--blue)', recovery: 'var(--green)', technique: 'var(--purple)', milestone: 'var(--yellow)', warning: 'var(--red)' };
+        const c = catColors[rec.category] || 'var(--blue)';
+        html += `<div class="card">
+          <div style="font-size:48px;text-align:center;margin-bottom:12px">${rec.icon || '🚣'}</div>
+          <div style="font-size:20px;font-weight:700;text-align:center;margin-bottom:4px">${rec.title}</div>
+          <div class="text-center mb-16"><span class="badge" style="background:${c}22;color:${c}">${rec.category}</span></div>
+          <div class="text-sm color-secondary" style="line-height:1.5;margin-bottom:16px">${rec.message}</div>
+          ${rec.suggestedWorkout ? `<div class="card" style="background:var(--bg-tertiary)">
+            <div class="card-title mb-8">Suggested Workout</div>
+            <div class="flex justify-between">
+              <div><div class="text-xs color-secondary">Split</div><div class="font-bold">${rec.suggestedWorkout.split || '--'} /500m</div></div>
+              <div><div class="text-xs color-secondary">Rate</div><div class="font-bold">${rec.suggestedWorkout.strokeRate || '--'} s/m</div></div>
+              <div><div class="text-xs color-secondary">Duration</div><div class="font-bold">${rec.suggestedWorkout.duration || '--'} min</div></div>
+              <div><div class="text-xs color-secondary">Intensity</div><div class="font-bold">${rec.suggestedWorkout.intensity || '--'}</div></div>
+            </div>
+          </div>` : ''}
+        </div>`;
+      } else {
+        html += `<div class="empty-state">
+          <div class="empty-icon">🧠</div>
+          <div class="empty-title">Set Up Profile</div>
+          <div class="empty-subtitle">Complete your profile to get personalized coaching</div>
+        </div>`;
+      }
+    } else if (subTab === 'weekly') {
+      const plan = AICoach.generateWeeklyPlan(profile, status);
+      const todayIdx = (new Date().getDay() + 6) % 7;
+
+      html += '<div class="card"><div class="card-title mb-16">Weekly Training Plan</div>';
+      for (let i = 0; i < plan.length; i++) {
+        const p = plan[i];
+        const isToday = i === todayIdx;
+        const intensityColors = { Easy: 'var(--green)', Moderate: 'var(--blue)', Hard: 'var(--red)', Recovery: 'var(--text-tertiary)', Max: 'var(--orange)' };
+        const c = intensityColors[p.intensity] || 'var(--blue)';
+
+        html += `<div class="flex items-center justify-between" style="padding:12px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);${isToday ? 'background:var(--blue)08;margin:0 -16px;padding-left:16px;padding-right:16px;border-radius:8px' : ''}">
+          <div>
+            <div class="flex items-center gap-8">
+              <span class="text-sm font-bold" style="${isToday ? 'color:var(--blue)' : ''}">${p.day}</span>
+              ${isToday ? '<span class="badge" style="background:var(--blue)22;color:var(--blue);font-size:10px">TODAY</span>' : ''}
+            </div>
+            <div class="text-sm color-secondary mt-8">${p.type}</div>
+          </div>
+          <div class="text-right">
+            <span class="badge" style="background:${c}22;color:${c}">${p.intensity}</span>
+            ${p.duration > 0 ? `<div class="text-xs color-secondary mt-8">${p.duration} min · ${p.sr} s/m</div>` : ''}
+          </div>
+        </div>`;
+      }
+      html += '</div>';
+    } else if (subTab === 'insights') {
+      html += '<div class="card"><div class="card-title mb-8">Training Insights</div>';
+
+      if (scores.length >= 3) {
+        const recent = scores.slice(0, 5);
+        const avgSplit = recent.reduce((a, s) => a + (s.splitSeconds || 0), 0) / recent.length;
+        html += `<div class="flex items-center gap-12" style="padding:12px 0;border-bottom:0.5px solid rgba(255,255,255,0.05)">
+          <span style="font-size:24px">&#128200;</span>
+          <div><div class="text-sm font-bold">Avg Split (Last 5)</div><div class="text-sm color-secondary">${formatSplit(avgSplit)} /500m</div></div>
+        </div>`;
+      }
+
+      html += `<div class="flex items-center gap-12" style="padding:12px 0;border-bottom:0.5px solid rgba(255,255,255,0.05)">
+        <span style="font-size:24px">&#127942;</span>
+        <div><div class="text-sm font-bold">Total Workouts</div><div class="text-sm color-secondary">${profile?.totalWorkouts ?? 0} sessions logged</div></div>
+      </div>`;
+
+      html += `<div class="flex items-center gap-12" style="padding:12px 0">
+        <span style="font-size:24px">&#128170;</span>
+        <div><div class="text-sm font-bold">Consistency</div><div class="text-sm color-secondary">${profile?.streakDays ?? 0} day streak · ${profile?.currentWeekSessions ?? 0} this week</div></div>
+      </div>`;
+
+      html += '</div>';
+
+      html += `<div class="card" style="background:var(--blue)08">
+        <div class="flex items-center gap-8">
+          <span>&#128161;</span>
+          <span class="text-sm color-secondary">The AI coach learns from your data over time. Log more scores and workouts for better personalized recommendations.</span>
+        </div>
+      </div>`;
+    }
+
+    html += '</div>';
+    return html;
+  },
+
+  // =========================================
+  // MORE
+  // =========================================
+  more() {
+    return `<div class="fade-in">
+      <div class="list-section">
+        <div class="list-section-title">Training</div>
+        <div class="list-item" onclick="App.navigate('hr')">
+          <div class="list-icon" style="background:var(--red)22;color:var(--red)">&#10084;</div>
+          <div class="list-item-content"><div class="list-item-title">HR Monitor</div></div>
+          <div class="list-arrow">&#8250;</div>
+        </div>
+        <div class="list-item" onclick="App.navigate('gym')">
+          <div class="list-icon" style="background:var(--blue)22;color:var(--blue)">&#127947;</div>
+          <div class="list-item-content"><div class="list-item-title">Gym Tracker</div></div>
+          <div class="list-arrow">&#8250;</div>
+        </div>
+        <div class="list-item" onclick="App.navigate('history')">
+          <div class="list-icon" style="background:var(--purple)22;color:var(--purple)">&#128336;</div>
+          <div class="list-item-content"><div class="list-item-title">Erg History</div></div>
+          <div class="list-arrow">&#8250;</div>
+        </div>
+      </div>
+
+      <div class="list-section">
+        <div class="list-section-title">Body</div>
+        <div class="list-item" onclick="App.navigate('calories')">
+          <div class="list-icon" style="background:var(--green)22;color:var(--green)">&#127860;</div>
+          <div class="list-item-content"><div class="list-item-title">Nutrition</div></div>
+          <div class="list-arrow">&#8250;</div>
+        </div>
+        <div class="list-item" onclick="App.navigate('body')">
+          <div class="list-icon" style="background:var(--indigo)22;color:var(--indigo)">&#128716;</div>
+          <div class="list-item-content"><div class="list-item-title">Recovery & Sleep</div></div>
+          <div class="list-arrow">&#8250;</div>
+        </div>
+      </div>
+
+      <div class="list-section">
+        <div class="list-section-title">Settings</div>
+        <div class="list-item" onclick="App.navigate('profile')">
+          <div class="list-icon" style="background:var(--orange)22;color:var(--orange)">&#128100;</div>
+          <div class="list-item-content"><div class="list-item-title">Profile</div></div>
+          <div class="list-arrow">&#8250;</div>
+        </div>
+        <div class="list-item" onclick="App.navigate('simulate')">
+          <div class="list-icon" style="background:var(--teal)22;color:var(--teal)">&#128202;</div>
+          <div class="list-item-content"><div class="list-item-title">Simulate Data</div><div class="list-item-subtitle">Generate sample data to see the app in action</div></div>
+          <div class="list-arrow">&#8250;</div>
+        </div>
+      </div>
+    </div>`;
+  },
+
+  // =========================================
+  // HR MONITOR
+  // =========================================
+  hrMonitor() {
+    const isSupported = BluetoothHR.isSupported();
+    const connected = BluetoothHR.connected;
+
+    let html = '<div class="fade-in">';
+
+    // Source badge
+    const source = connected ? 'Polar' : 'No Device';
+    const sourceIcon = connected ? '&#10084;' : '&#128148;';
+    const sourceColor = connected ? 'var(--red)' : 'var(--text-tertiary)';
+    html += `<div class="hr-source-badge">
+      <span style="color:${sourceColor}">${sourceIcon}</span>
+      <span class="font-bold text-sm">${source}</span>
+      ${connected ? `<span class="text-sm color-secondary font-mono">${BluetoothHR.currentHR} BPM</span>` : ''}
+    </div>`;
+
+    if (connected) {
+      // Connected view
+      html += `<div class="card">
+        <div class="flex items-center justify-between mb-16">
+          <div class="flex items-center gap-8">
+            <span style="color:var(--red)">&#10084;</span>
+            <span class="font-bold text-sm">${BluetoothHR.deviceName}</span>
+          </div>
+          ${BluetoothHR.batteryLevel != null ? `<span class="text-xs color-secondary">&#128267; ${BluetoothHR.batteryLevel}%</span>` : ''}
+          <button class="btn-small btn-outline" style="color:var(--red);border-color:var(--red)" onclick="App.disconnectHR()">Disconnect</button>
+        </div>
+      </div>`;
+
+      // Big HR
+      html += `<div class="ring-container">
+        <div class="ring">
+          ${ringSVG(200, 12, BluetoothHR.currentHR / 200, 'var(--red)')}
+          <div class="ring-label">
+            <div class="hr-big" style="color:var(--red)">${BluetoothHR.currentHR}</div>
+            <div class="ring-caption">BPM</div>
+          </div>
+        </div>
+      </div>`;
+
+      // Session stats
+      const stats = BluetoothHR.getSessionStats();
+      if (stats.count > 0) {
+        html += `<div class="flex gap-8 mt-16">
+          <div class="stat-card" style="flex:1"><div class="stat-value">${stats.avg}</div><div class="stat-label">Avg</div></div>
+          <div class="stat-card" style="flex:1"><div class="stat-value">${stats.max}</div><div class="stat-label">Max</div></div>
+          <div class="stat-card" style="flex:1"><div class="stat-value">${stats.min}</div><div class="stat-label">Min</div></div>
+        </div>`;
+      }
+    } else {
+      // Disconnected view
+      html += `<div class="text-center" style="padding:30px 0">
+        <div style="font-size:80px;margin-bottom:16px;opacity:0.8">&#10084;</div>
+        <div style="font-size:20px;font-weight:700;margin-bottom:8px">Connect HR Monitor</div>
+        <div class="text-sm color-secondary mb-16">Connect your Polar H10, H9, or other BLE heart rate monitor for real-time tracking.</div>
+        ${isSupported ? `<button class="btn btn-red" onclick="App.scanHR()">
+          <span>&#128225;</span> Scan for Devices
+        </button>` : `<div class="card" style="background:var(--red)11">
+          <div class="text-sm color-red">Web Bluetooth is not supported in this browser. Use Chrome or Edge on desktop, or Chrome on Android.</div>
+        </div>`}
+      </div>`;
+
+      html += `<div class="card">
+        <div class="text-xs font-bold mb-8">Supported Devices</div>
+        <div class="flex gap-8">
+          <span class="badge" style="background:var(--blue)22;color:var(--blue)">Polar H10</span>
+          <span class="badge" style="background:var(--blue)22;color:var(--blue)">Polar H9</span>
+          <span class="badge" style="background:var(--blue)22;color:var(--blue)">Polar OH1</span>
+        </div>
+        <div class="text-xs color-tertiary mt-8">Any Bluetooth LE heart rate monitor will work</div>
+      </div>`;
+    }
+
+    html += '</div>';
+    return html;
+  },
+
+  // =========================================
+  // GYM TRACKER
+  // =========================================
+  async gym() {
+    const sessions = await Store.getGymSessions();
+
+    let html = '<div class="fade-in">';
+
+    // New session button
+    html += `<button class="btn btn-blue mb-16" onclick="App.startGymSession()">
+      <span>&#127947;</span> Start New Session
+    </button>`;
+
+    // Active session
+    if (App.activeGymSession) {
+      html += this.activeGymSession(App.activeGymSession);
+    }
+
+    // Recent sessions
+    html += '<div class="card"><div class="card-title mb-8">Recent Sessions</div>';
+    if (sessions.length === 0) {
+      html += `<div class="empty-state"><div class="empty-icon">&#127947;</div><div class="empty-title">No gym sessions yet</div><div class="empty-subtitle">Start a session to track your lifts</div></div>`;
+    } else {
+      for (const s of sessions.slice(0, 5)) {
+        html += `<div class="exercise-item">
+          <div style="flex:1">
+            <div class="font-bold">${s.sessionName}</div>
+            <div class="text-xs color-secondary">${s.exercises?.length || 0} exercises &middot; ${s.totalSets || 0} sets &middot; ${formatDate(s.date)}</div>
+          </div>
+          <div class="text-right">
+            <div class="font-bold">${s.totalVolume >= 1000 ? (s.totalVolume / 1000).toFixed(1) + 'k' : Math.round(s.totalVolume)} kg</div>
+            <div class="text-xs color-secondary">Strain: ${(s.strainScore || 0).toFixed(1)}</div>
+          </div>
+        </div>`;
+      }
+    }
+    html += '</div></div>';
+    return html;
+  },
+
+  activeGymSession(session) {
+    let html = `<div class="card" style="border:1px solid var(--blue)33">
+      <div class="card-header">
+        <span class="card-title">${session.sessionName}</span>
+        <button class="btn-small btn-blue" onclick="App.finishGymSession()">Finish</button>
+      </div>`;
+
+    // Exercises
+    for (let i = 0; i < session.exercises.length; i++) {
+      const ex = session.exercises[i];
+      html += `<div style="margin-bottom:16px;padding:12px;background:var(--bg-tertiary);border-radius:12px">
+        <div class="flex items-center justify-between mb-8">
+          <span class="font-bold">${ex.name}</span>
+          <span class="text-xs color-secondary">${ex.muscleGroup}</span>
+        </div>
+        <div class="set-row" style="color:var(--text-secondary)">
+          <span>Set</span><span>Weight (kg)</span><span>Reps</span><span>RPE</span>
+        </div>`;
+
+      for (let j = 0; j < ex.sets.length; j++) {
+        const s = ex.sets[j];
+        html += `<div class="set-row">
+          <span class="set-number">${j + 1}</span>
+          <span class="font-bold">${s.weightKg}</span>
+          <span>${s.reps}</span>
+          <span class="color-secondary">${s.rpe || '-'}</span>
+        </div>`;
+      }
+
+      html += `<button class="btn-small btn-gray mt-8" onclick="App.addSet(${i})">+ Add Set</button>
+      </div>`;
+    }
+
+    html += `<button class="btn btn-gray mt-8" onclick="App.addExercise()">+ Add Exercise</button>
+    </div>`;
+    return html;
+  },
+
+  // =========================================
+  // CALORIES
+  // =========================================
+  async calories() {
+    const profile = await Store.getProfile();
+    const todayEntries = await Store.getTodayCalories();
+
+    const totalCal = todayEntries.reduce((a, e) => a + e.calories, 0);
+    const totalProtein = todayEntries.reduce((a, e) => a + (e.protein || 0), 0);
+    const totalCarbs = todayEntries.reduce((a, e) => a + (e.carbs || 0), 0);
+    const totalFat = todayEntries.reduce((a, e) => a + (e.fat || 0), 0);
+
+    const target = profile?.calorieTarget || 2500;
+    const protTarget = profile?.proteinTarget || 150;
+    const carbTarget = profile?.carbTarget || 300;
+    const fatTarget = profile?.fatTarget || 80;
+
+    let html = '<div class="fade-in">';
+
+    // Calorie Ring
+    html += `<div class="ring-container">
+      <div class="ring">
+        ${ringSVG(160, 14, totalCal / target, totalCal > target ? 'var(--red)' : 'var(--green)')}
+        <div class="ring-label">
+          <div class="ring-value" style="font-size:36px">${totalCal}</div>
+          <div class="ring-caption">/ ${target} cal</div>
+        </div>
+      </div>
+    </div>`;
+
+    // Macros
+    html += `<div class="card">
+      <div class="card-title mb-8">Macros</div>
+      <div class="macro-bar-container">
+        <div class="macro-label"><span style="color:var(--red)">Protein</span><span>${totalProtein}g / ${protTarget}g</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(totalProtein / protTarget * 100, 100)}%;background:var(--red)"></div></div>
+      </div>
+      <div class="macro-bar-container">
+        <div class="macro-label"><span style="color:var(--blue)">Carbs</span><span>${totalCarbs}g / ${carbTarget}g</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(totalCarbs / carbTarget * 100, 100)}%;background:var(--blue)"></div></div>
+      </div>
+      <div class="macro-bar-container">
+        <div class="macro-label"><span style="color:var(--yellow)">Fat</span><span>${totalFat}g / ${fatTarget}g</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(totalFat / fatTarget * 100, 100)}%;background:var(--yellow)"></div></div>
+      </div>
+    </div>`;
+
+    // Water tracker
+    const waterGlasses = App.waterCount || 0;
+    html += `<div class="card">
+      <div class="card-title mb-8">Water (${waterGlasses} / 8 glasses)</div>
+      <div class="water-dots">
+        ${Array.from({length: 8}, (_, i) => `<button class="water-dot ${i < waterGlasses ? 'filled' : ''}" onclick="App.setWater(${i + 1})">&#128167;</button>`).join('')}
+      </div>
+    </div>`;
+
+    // Quick Add from Library
+    html += `<div class="card">
+      <div class="card-header">
+        <span class="card-title">Quick Add</span>
+      </div>
+      <input class="form-input mb-8" type="text" id="food-search" placeholder="Search foods..." oninput="App.filterFoods(this.value)">
+      <div id="food-list">`;
+
+    for (const f of FoodLibrary.slice(0, 8)) {
+      html += `<div class="food-item" onclick="App.addFood(${JSON.stringify(f).replace(/"/g, '&quot;')})">
+        <div><div class="food-name">${f.name}</div><div class="food-macros">P:${f.protein}g C:${f.carbs}g F:${f.fat}g</div></div>
+        <div class="food-cal">${f.cal} cal</div>
+      </div>`;
+    }
+    html += '</div></div>';
+
+    // Today's entries
+    if (todayEntries.length > 0) {
+      html += '<div class="card"><div class="card-title mb-8">Today\'s Log</div>';
+      for (const e of todayEntries) {
+        html += `<div class="exercise-item">
+          <div style="flex:1"><div class="text-sm">${e.name}</div></div>
+          <div class="text-right"><div class="font-bold">${e.calories} cal</div></div>
+        </div>`;
+      }
+      html += '</div>';
+    }
+
+    html += '</div>';
+    return html;
+  },
+
+  // =========================================
+  // HISTORY
+  // =========================================
+  async history() {
+    const scores = await Store.getScores();
+
+    let html = '<div class="fade-in">';
+
+    if (scores.length === 0) {
+      html += `<div class="empty-state">
+        <div class="empty-icon">&#128336;</div>
+        <div class="empty-title">No erg scores yet</div>
+        <div class="empty-subtitle">Capture or manually enter your erg scores</div>
+      </div>`;
+    } else {
+      html += '<div class="card">';
+      for (const s of scores) {
+        html += `<div class="score-row">
+          <div class="score-info">
+            <div class="score-type">${s.workoutType}</div>
+            <div class="score-split">${formatSplit(s.splitSeconds)} /500m</div>
+          </div>
+          <div class="score-meta">
+            <div class="score-distance">${s.distance ? s.distance.toLocaleString() + 'm' : '--'}</div>
+            <div class="score-date">${formatDate(s.date)} ${s.avgHR ? '&middot; ' + s.avgHR + ' bpm' : ''}</div>
+          </div>
+          ${s.capturedFromPhoto ? '<span class="text-xs color-secondary">&#128247;</span>' : ''}
+        </div>`;
+      }
+      html += '</div>';
+    }
+
+    html += '</div>';
+    return html;
+  },
+
+  // =========================================
+  // PROFILE
+  // =========================================
+  async profile() {
+    const profile = (await Store.getProfile()) || createDefaultProfile();
+
+    return `<div class="fade-in">
+      <div class="text-center" style="padding:20px 0">
+        <div style="font-size:64px;margin-bottom:8px">&#128100;</div>
+        <div style="font-size:20px;font-weight:700">Athlete Profile</div>
+      </div>
+
+      <div class="card">
+        <div class="form-group">
+          <label class="form-label">Name</label>
+          <input class="form-input" type="text" id="prof-name" value="${profile.name}" placeholder="Your name">
+        </div>
+        <div class="flex gap-8">
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Age</label>
+            <input class="form-input" type="number" id="prof-age" value="${profile.age}">
+          </div>
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Weight (kg)</label>
+            <input class="form-input" type="number" id="prof-weight" value="${profile.weight}">
+          </div>
+        </div>
+        <div class="flex gap-8">
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Height (cm)</label>
+            <input class="form-input" type="number" id="prof-height" value="${profile.height}">
+          </div>
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Gender</label>
+            <select class="form-select" id="prof-gender">
+              <option value="male" ${profile.gender === 'male' ? 'selected' : ''}>Male</option>
+              <option value="female" ${profile.gender === 'female' ? 'selected' : ''}>Female</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title mb-8">Heart Rate</div>
+        <div class="flex gap-8">
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Max HR</label>
+            <input class="form-input" type="number" id="prof-maxhr" value="${profile.maxHR}">
+          </div>
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Resting HR</label>
+            <input class="form-input" type="number" id="prof-resthr" value="${profile.restingHR}">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title mb-8">Personal Records (split in seconds)</div>
+        <div class="flex gap-8">
+          <div class="form-group" style="flex:1">
+            <label class="form-label">2K Split</label>
+            <input class="form-input" type="text" id="prof-2k" value="${profile.pr2k || ''}" placeholder="1:45.0">
+          </div>
+          <div class="form-group" style="flex:1">
+            <label class="form-label">5K Split</label>
+            <input class="form-input" type="text" id="prof-5k" value="${profile.pr5k || ''}" placeholder="1:55.0">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title mb-8">Nutrition Targets</div>
+        <div class="flex gap-8">
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Daily Cal</label>
+            <input class="form-input" type="number" id="prof-cal" value="${profile.calorieTarget}">
+          </div>
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Protein (g)</label>
+            <input class="form-input" type="number" id="prof-protein" value="${profile.proteinTarget}">
+          </div>
+        </div>
+        <div class="flex gap-8">
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Carbs (g)</label>
+            <input class="form-input" type="number" id="prof-carbs" value="${profile.carbTarget}">
+          </div>
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Fat (g)</label>
+            <input class="form-input" type="number" id="prof-fat" value="${profile.fatTarget}">
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-blue mb-16" onclick="App.saveProfile()">Save Profile</button>
+    </div>`;
+  },
+
+  // =========================================
+  // SIMULATE DATA
+  // =========================================
+  simulate() {
+    return `<div class="fade-in">
+      <div class="text-center" style="padding:20px 0">
+        <div style="font-size:48px;margin-bottom:12px">&#128202;</div>
+        <div style="font-size:20px;font-weight:700;margin-bottom:8px">Generate Sample Data</div>
+        <div class="text-sm color-secondary mb-16">Since this is a web app without real Apple Watch / HealthKit data, you can generate realistic sample data to see all features in action.</div>
+      </div>
+
+      <button class="btn btn-blue mb-16" onclick="App.generateSampleData()">Generate Sample Data</button>
+      <button class="btn btn-red mb-16" onclick="App.clearAllData()">Clear All Data</button>
+
+      <div class="card" style="background:var(--blue)08">
+        <div class="text-sm color-secondary">This will create:
+          <ul style="margin-top:8px;padding-left:20px;line-height:1.6">
+            <li>A sample athlete profile</li>
+            <li>7 days of recovery/sleep/strain data</li>
+            <li>Several erg scores (2K, 5K, steady state)</li>
+            <li>A gym session with exercises</li>
+            <li>Some calorie entries</li>
+          </ul>
+        </div>
+      </div>
+    </div>`;
+  }
+};
+
+// ===== Main Application Controller =====
+
+const App = {
+  currentTab: 'dashboard',
+  currentSubView: null,
+  viewStack: [],
+  activeGymSession: null,
+  waterCount: 0,
+  cameraStream: null,
+
+  async init() {
+    await Store.init();
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      
+    }
+
+    // Tab bar events
+    document.querySelectorAll('#tab-bar .tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        if (tab === 'capture') {
+          this.navigate('capture');
+        } else {
+          this.switchTab(tab);
+        }
+      });
+    });
+
+    // Check if profile exists
+    const profile = await Store.getProfile();
+    if (!profile) {
+      this.navigate('profile');
+    } else {
+      this.switchTab('dashboard');
+    }
+
+    // Bluetooth HR live update
+    BluetoothHR.onUpdate = (hr) => {
+      if (this.currentTab === 'hr' || this.currentSubView === 'hr') {
+        this.render();
+      }
+    };
+
+    BluetoothHR.onDisconnect = () => {
+      if (this.currentTab === 'hr' || this.currentSubView === 'hr') {
+        this.render();
+      }
+    };
+  },
+
+  switchTab(tab) {
+    this.currentTab = tab;
+    this.currentSubView = null;
+    this.viewStack = [];
+
+    // Update tab bar
+    document.querySelectorAll('#tab-bar .tab').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tab === tab);
+    });
+
+    // Update nav
+    const titles = { dashboard: 'ErgAI', body: 'Body Status', capture: 'Capture', coach: 'AI Coach', more: 'More' };
+    document.getElementById('nav-title').textContent = titles[tab] || 'ErgAI';
+    this.hideBackButton();
+
+    this.render();
+  },
+
+  navigate(view) {
+    this.currentSubView = view;
+    this.viewStack.push(view);
+
+    const titles = {
+      hr: 'Heart Rate', gym: 'Gym Tracker', history: 'Erg History',
+      calories: 'Nutrition', profile: 'Profile', simulate: 'Simulate Data',
+      capture: 'Capture'
+    };
+
+    document.getElementById('nav-title').textContent = titles[view] || 'ErgAI';
+    this.showBackButton();
+    this.render();
+  },
+
+  goBack() {
+    this.viewStack.pop();
+    if (this.viewStack.length > 0) {
+      this.currentSubView = this.viewStack[this.viewStack.length - 1];
+      this.render();
+    } else {
+      this.currentSubView = null;
+      this.switchTab(this.currentTab);
+    }
+  },
+
+  showBackButton() {
+    const nav = document.getElementById('nav-bar');
+    let backBtn = nav.querySelector('.nav-back');
+    if (!backBtn) {
+      backBtn = document.createElement('button');
+      backBtn.className = 'nav-back';
+      backBtn.innerHTML = '&#8249; Back';
+      backBtn.onclick = () => this.goBack();
+      nav.appendChild(backBtn);
+    }
+    backBtn.style.display = 'flex';
+  },
+
+  hideBackButton() {
+    const backBtn = document.querySelector('.nav-back');
+    if (backBtn) backBtn.style.display = 'none';
+  },
+
+  async render() {
+    const content = document.getElementById('content');
+    let html = '';
+
+    try {
+      if (this.currentSubView) {
+        switch (this.currentSubView) {
+          case 'hr': html = Views.hrMonitor(); break;
+          case 'gym': html = await Views.gym(); break;
+          case 'history': html = await Views.history(); break;
+          case 'calories': html = await Views.calories(); break;
+          case 'profile': html = await Views.profile(); break;
+          case 'simulate': html = Views.simulate(); break;
+          case 'capture': html = Views.capture(); break;
+          default: html = await Views.dashboard();
+        }
+      } else {
+        switch (this.currentTab) {
+          case 'dashboard': html = await Views.dashboard(); break;
+          case 'body': html = await Views.body(); break;
+          case 'coach': html = await Views.coach(); break;
+          case 'more': html = Views.more(); break;
+          default: html = await Views.dashboard();
+        }
+      }
+    } catch (e) {
+      console.error('Render error:', e);
+      html = `<div class="empty-state"><div class="empty-icon">&#9888;</div><div class="empty-title">Error</div><div class="empty-subtitle">${e.message}</div></div>`;
+    }
+
+    content.innerHTML = html;
+    content.scrollTop = 0;
+  },
+
+  // Body sub-tab
+  async renderBody(subTab) {
+    const content = document.getElementById('content');
+    content.innerHTML = await Views.body(subTab);
+  },
+
+  // Coach sub-tab
+  async renderCoach(subTab) {
+    const content = document.getElementById('content');
+    content.innerHTML = await Views.coach(subTab);
+  },
+
+  // ===== Score Management =====
+
+  parseSplitToSeconds(splitStr) {
+    if (!splitStr) return null;
+    const parts = splitStr.split(':');
+    if (parts.length !== 2) return null;
+    return parseInt(parts[0]) * 60 + parseFloat(parts[1]);
+  },
+
+  async saveScore() {
+    const type = document.getElementById('score-type').value;
+    const timeStr = document.getElementById('score-time').value;
+    const distance = parseInt(document.getElementById('score-distance').value) || null;
+    const splitStr = document.getElementById('score-split').value;
+    const sr = parseInt(document.getElementById('score-sr').value) || null;
+    const hr = parseInt(document.getElementById('score-hr').value) || null;
+    const cal = parseInt(document.getElementById('score-cal').value) || null;
+
+    const splitSeconds = this.parseSplitToSeconds(splitStr);
+    if (!splitSeconds && !timeStr && !distance) {
+      alert('Please enter at least a split, time, or distance.');
+      return;
+    }
+
+    const score = {
+      workoutType: type,
+      timeStr: timeStr || null,
+      distance: distance,
+      splitSeconds: splitSeconds,
+      strokeRate: sr,
+      avgHR: hr,
+      calories: cal,
+      capturedFromPhoto: false,
+      date: new Date().toISOString()
+    };
+
+    await Store.addScore(score);
+
+    // Update profile
+    const profile = await Store.getProfile();
+    if (profile) {
+      profile.totalWorkouts = (profile.totalWorkouts || 0) + 1;
+      if (distance) profile.totalLifetimeMeters = (profile.totalLifetimeMeters || 0) + distance;
+      profile.currentWeekSessions = (profile.currentWeekSessions || 0) + 1;
+      if (distance) profile.currentWeekMeters = (profile.currentWeekMeters || 0) + distance;
+
+      // Update PR
+      if (type === '2k' && splitSeconds && (!profile.pr2k || splitSeconds < profile.pr2k)) {
+        profile.pr2k = splitSeconds;
+      }
+      if (type === '5k' && splitSeconds && (!profile.pr5k || splitSeconds < profile.pr5k)) {
+        profile.pr5k = splitSeconds;
+      }
+
+      await Store.saveProfile(profile);
+    }
+
+    alert('Score saved!');
+    this.switchTab('dashboard');
+  },
+
+  // ===== Camera =====
+
+  async startCamera() {
+    try {
+      const video = document.getElementById('camera-video');
+      this.cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' }
+      });
+      video.srcObject = this.cameraStream;
+      video.style.display = 'block';
+
+      const btn = document.getElementById('btn-camera');
+      btn.textContent = '📷 Capture';
+      btn.onclick = () => this.capturePhoto();
+    } catch (e) {
+      alert('Camera access denied or not available. Use the upload button or manual entry instead.');
+    }
+  },
+
+  capturePhoto() {
+    const video = document.getElementById('camera-video');
+    const canvas = document.getElementById('camera-canvas');
+    const img = document.getElementById('captured-img');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+
+    const dataUrl = canvas.toDataURL('image/jpeg');
+    img.src = dataUrl;
+    img.style.display = 'block';
+    video.style.display = 'none';
+
+    // Stop camera
+    if (this.cameraStream) {
+      this.cameraStream.getTracks().forEach(t => t.stop());
+      this.cameraStream = null;
+    }
+
+    // Show result area with message
+    document.getElementById('capture-result').style.display = 'block';
+    document.getElementById('ocr-result').innerHTML = `
+      <div class="text-sm color-secondary">Photo captured. In-browser OCR is limited — please verify and enter values manually below, or use a native app for automatic OCR.</div>
+    `;
+  },
+
+  uploadPhoto() {
+    const input = document.getElementById('photo-upload');
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = document.getElementById('captured-img');
+        img.src = ev.target.result;
+        img.style.display = 'block';
+        document.getElementById('capture-result').style.display = 'block';
+        document.getElementById('ocr-result').innerHTML = `
+          <div class="text-sm color-secondary">Photo uploaded. Enter the values you see on the erg screen into the fields below.</div>
+        `;
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  },
+
+  // ===== Profile =====
+
+  async saveProfile() {
+    const profile = (await Store.getProfile()) || createDefaultProfile();
+
+    profile.name = document.getElementById('prof-name').value;
+    profile.age = parseInt(document.getElementById('prof-age').value) || 20;
+    profile.weight = parseInt(document.getElementById('prof-weight').value) || 80;
+    profile.height = parseInt(document.getElementById('prof-height').value) || 180;
+    profile.gender = document.getElementById('prof-gender').value;
+    profile.maxHR = parseInt(document.getElementById('prof-maxhr').value) || 195;
+    profile.restingHR = parseInt(document.getElementById('prof-resthr').value) || 60;
+    profile.calorieTarget = parseInt(document.getElementById('prof-cal').value) || 2500;
+    profile.proteinTarget = parseInt(document.getElementById('prof-protein').value) || 150;
+    profile.carbTarget = parseInt(document.getElementById('prof-carbs').value) || 300;
+    profile.fatTarget = parseInt(document.getElementById('prof-fat').value) || 80;
+
+    const pr2k = document.getElementById('prof-2k').value;
+    if (pr2k) profile.pr2k = this.parseSplitToSeconds(pr2k);
+    const pr5k = document.getElementById('prof-5k').value;
+    if (pr5k) profile.pr5k = this.parseSplitToSeconds(pr5k);
+
+    await Store.saveProfile(profile);
+    alert('Profile saved!');
+    this.switchTab('dashboard');
+  },
+
+  // ===== Bluetooth HR =====
+
+  async scanHR() {
+    try {
+      const device = await BluetoothHR.scan();
+      if (device) {
+        await BluetoothHR.connect();
+        this.render();
+      }
+    } catch (e) {
+      alert(e.message);
+    }
+  },
+
+  disconnectHR() {
+    BluetoothHR.disconnect();
+    this.render();
+  },
+
+  // ===== Gym =====
+
+  startGymSession() {
+    const name = prompt('Session name (e.g., Push Day, Pull Day):', 'Push Day');
+    if (!name) return;
+
+    this.activeGymSession = {
+      sessionName: name,
+      sessionType: 'custom',
+      exercises: [],
+      totalVolume: 0,
+      totalSets: 0,
+      durationMinutes: 0,
+      strainScore: 0,
+      startTime: new Date().toISOString(),
+      date: new Date().toISOString()
+    };
+
+    this.render();
+  },
+
+  addExercise() {
+    if (!this.activeGymSession) return;
+
+    // Show exercise picker
+    const names = ExerciseLibrary.map(e => e.name);
+    const name = prompt('Exercise name:\n\nSuggestions: ' + names.slice(0, 10).join(', ') + '...');
+    if (!name) return;
+
+    const lib = ExerciseLibrary.find(e => e.name.toLowerCase() === name.toLowerCase());
+    this.activeGymSession.exercises.push({
+      name: name,
+      muscleGroup: lib?.muscle || 'other',
+      category: lib?.category || 'barbell',
+      sets: []
+    });
+
+    this.render();
+  },
+
+  addSet(exerciseIdx) {
+    if (!this.activeGymSession) return;
+    const ex = this.activeGymSession.exercises[exerciseIdx];
+    if (!ex) return;
+
+    const lastSet = ex.sets[ex.sets.length - 1];
+    const weight = prompt('Weight (kg):', lastSet?.weightKg || '60');
+    if (!weight) return;
+    const reps = prompt('Reps:', lastSet?.reps || '10');
+    if (!reps) return;
+    const rpe = prompt('RPE (1-10, optional):', '');
+
+    ex.sets.push({
+      weightKg: parseFloat(weight),
+      reps: parseInt(reps),
+      rpe: rpe ? parseFloat(rpe) : null,
+      isWarmup: false
+    });
+
+    this.render();
+  },
+
+  async finishGymSession() {
+    if (!this.activeGymSession) return;
+
+    const session = this.activeGymSession;
+    session.endTime = new Date().toISOString();
+    session.durationMinutes = Math.round((new Date(session.endTime) - new Date(session.startTime)) / 60000);
+
+    // Calculate totals
+    let totalVol = 0, totalSets = 0;
+    for (const ex of session.exercises) {
+      for (const s of ex.sets) {
+        if (!s.isWarmup) {
+          totalVol += s.weightKg * s.reps;
+          totalSets++;
+        }
+      }
+    }
+    session.totalVolume = totalVol;
+    session.totalSets = totalSets;
+
+    // Calculate strain
+    const profile = await Store.getProfile();
+    const maxHR = profile?.maxHR || 195;
+    session.strainScore = RecoveryEngine.calculateGymStrain(totalVol, totalSets, session.durationMinutes, null, maxHR);
+
+    await Store.saveGymSession(session);
+    this.activeGymSession = null;
+
+    alert(`Session saved! Volume: ${totalVol >= 1000 ? (totalVol/1000).toFixed(1) + 'k' : Math.round(totalVol)} kg, Strain: ${session.strainScore.toFixed(1)}`);
+    this.render();
+  },
+
+  // ===== Calories =====
+
+  async addFood(food) {
+    await Store.addCalorieEntry({
+      name: food.name,
+      calories: food.cal,
+      protein: food.protein,
+      carbs: food.carbs,
+      fat: food.fat,
+      date: new Date().toISOString()
+    });
+    this.render();
+  },
+
+  filterFoods(query) {
+    const list = document.getElementById('food-list');
+    const filtered = query
+      ? FoodLibrary.filter(f => f.name.toLowerCase().includes(query.toLowerCase()))
+      : FoodLibrary.slice(0, 8);
+
+    list.innerHTML = filtered.map(f =>
+      `<div class="food-item" onclick="App.addFood(${JSON.stringify(f).replace(/"/g, '&quot;')})">
+        <div><div class="food-name">${f.name}</div><div class="food-macros">P:${f.protein}g C:${f.carbs}g F:${f.fat}g</div></div>
+        <div class="food-cal">${f.cal} cal</div>
+      </div>`
+    ).join('');
+  },
+
+  setWater(count) {
+    this.waterCount = count;
+    this.render();
+  },
+
+  // ===== Sample Data Generation =====
+
+  async generateSampleData() {
+    // Profile
+    const profile = createDefaultProfile();
+    profile.name = 'Alex';
+    profile.age = 22;
+    profile.weight = 82;
+    profile.height = 185;
+    profile.maxHR = 195;
+    profile.restingHR = 55;
+    profile.pr2k = 105; // 1:45.0
+    profile.pr5k = 115; // 1:55.0
+    profile.totalWorkouts = 47;
+    profile.totalLifetimeMeters = 892000;
+    profile.currentWeekSessions = 4;
+    profile.currentWeekMeters = 38000;
+    profile.streakDays = 12;
+    profile.fitnessScore = 72;
+    profile.fatigueScore = 35;
+    profile.formScore = 37;
+    await Store.saveProfile(profile);
+
+    // Erg Scores
+    const scores = [
+      { workoutType: '2k', splitSeconds: 105, distance: 2000, strokeRate: 30, avgHR: 182, date: new Date(Date.now() - 86400000 * 2).toISOString() },
+      { workoutType: '5k', splitSeconds: 115.5, distance: 5000, strokeRate: 24, avgHR: 168, date: new Date(Date.now() - 86400000 * 4).toISOString() },
+      { workoutType: 'steady_state', splitSeconds: 125, distance: 10000, strokeRate: 20, avgHR: 148, date: new Date(Date.now() - 86400000 * 5).toISOString() },
+      { workoutType: '2k', splitSeconds: 106.5, distance: 2000, strokeRate: 29, avgHR: 180, date: new Date(Date.now() - 86400000 * 10).toISOString() },
+      { workoutType: 'interval', splitSeconds: 100, distance: 4000, strokeRate: 28, avgHR: 175, date: new Date(Date.now() - 86400000 * 7).toISOString() },
+    ];
+    for (const s of scores) await Store.addScore(s);
+
+    // Daily Statuses (7 days)
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(Date.now() - 86400000 * i);
+      const recovery = 40 + Math.random() * 50;
+      const sleepMin = 350 + Math.floor(Math.random() * 150);
+      const sleepScore = RecoveryEngine.calculateSleepScore(sleepMin, Math.floor(sleepMin * 0.17), Math.floor(sleepMin * 0.22));
+      const strain = 10 + Math.random() * 60;
+      const baseline = RecoveryEngine.calculateBaselineEnergy(recovery, sleepScore);
+
+      const status = {
+        date: date.toISOString(),
+        recoveryScore: Math.round(recovery * 10) / 10,
+        sleepScore: Math.round(sleepScore * 10) / 10,
+        strainScore: Math.round(strain * 10) / 10,
+        energyBaseline: Math.round(baseline),
+        energyLevel: Math.round(baseline - strain * 0.3),
+        totalSleepMinutes: sleepMin,
+        deepSleepMinutes: Math.floor(sleepMin * 0.17),
+        remSleepMinutes: Math.floor(sleepMin * 0.22),
+        lightSleepMinutes: Math.floor(sleepMin * 0.5),
+        awakeMinutes: Math.floor(sleepMin * 0.05),
+        hrv: 40 + Math.random() * 40,
+        rhr: 50 + Math.random() * 15,
+        bloodOxygen: 95 + Math.random() * 4,
+        respiratoryRate: 13 + Math.random() * 4,
+        wristTemp: -0.3 + Math.random() * 0.6,
+        steps: 5000 + Math.floor(Math.random() * 8000),
+        activeCalories: 200 + Math.floor(Math.random() * 500),
+        activeMinutes: 20 + Math.floor(Math.random() * 60),
+        energyDrains: i === 0 ? [
+          { source: 'Morning Row (SS)', durationMinutes: 50, amount: 18, time: new Date(date.getTime() + 28800000).toISOString() },
+          { source: 'Gym Session', durationMinutes: 60, amount: 22, time: new Date(date.getTime() + 54000000).toISOString() }
+        ] : []
+      };
+
+      await Store.saveDailyStatus(status);
+    }
+
+    // Gym session
+    const gymSession = {
+      sessionName: 'Push Day',
+      sessionType: 'push',
+      exercises: [
+        { name: 'Bench Press', muscleGroup: 'chest', category: 'barbell', sets: [
+          { weightKg: 80, reps: 8, rpe: 7, isWarmup: false },
+          { weightKg: 85, reps: 6, rpe: 8, isWarmup: false },
+          { weightKg: 85, reps: 5, rpe: 9, isWarmup: false }
+        ]},
+        { name: 'Overhead Press', muscleGroup: 'shoulders', category: 'barbell', sets: [
+          { weightKg: 50, reps: 8, rpe: 7, isWarmup: false },
+          { weightKg: 50, reps: 7, rpe: 8, isWarmup: false }
+        ]},
+        { name: 'Lateral Raise', muscleGroup: 'shoulders', category: 'dumbbell', sets: [
+          { weightKg: 12, reps: 15, rpe: 8, isWarmup: false },
+          { weightKg: 12, reps: 12, rpe: 9, isWarmup: false }
+        ]}
+      ],
+      totalVolume: 80*8 + 85*6 + 85*5 + 50*8 + 50*7 + 12*15 + 12*12,
+      totalSets: 7,
+      durationMinutes: 55,
+      strainScore: 42,
+      date: new Date(Date.now() - 86400000).toISOString()
+    };
+    await Store.saveGymSession(gymSession);
+
+    // Calorie entries
+    const foods = [
+      { name: 'Oatmeal (1 cup)', calories: 300, protein: 10, carbs: 54, fat: 5 },
+      { name: 'Whey Protein Shake', calories: 150, protein: 30, carbs: 3, fat: 2 },
+      { name: 'Chicken Breast (6oz)', calories: 280, protein: 53, carbs: 0, fat: 6 },
+      { name: 'Brown Rice (1 cup)', calories: 215, protein: 5, carbs: 45, fat: 2 }
+    ];
+    for (const f of foods) {
+      await Store.addCalorieEntry({ ...f, name: f.name, date: new Date().toISOString() });
+    }
+
+    alert('Sample data generated! Explore the app to see everything in action.');
+    this.switchTab('dashboard');
+  },
+
+  async clearAllData() {
+    if (!confirm('Delete ALL app data? This cannot be undone.')) return;
+
+    await Store.clear('profile');
+    await Store.clear('scores');
+    await Store.clear('dailyStatus');
+    await Store.clear('gymSessions');
+    await Store.clear('calorieEntries');
+    await Store.clear('hrSessions');
+    await Store.clear('baselines');
+
+    this.activeGymSession = null;
+    this.waterCount = 0;
+
+    alert('All data cleared.');
+    this.switchTab('dashboard');
+  }
+};
+
+// ===== Boot =====
+document.addEventListener('DOMContentLoaded', () => App.init());
+  </script>
+</body>
+</html>
