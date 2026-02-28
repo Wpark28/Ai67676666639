@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classroom Auto-Completer</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Classroom Completer</h1>
+      <p class="subtitle">Adjust settings then generate</p>
+    </header>
+
+    <!-- API Key Section -->
+    <section class="section api-section">
+      <label for="apiKey">OpenAI API Key</label>
+      <div class="api-row">
+        <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
+        <button id="toggleKey" class="btn-icon" title="Show/Hide key">&#128065;</button>
+      </div>
+      <button id="saveKey" class="btn btn-sm">Save Key</button>
+      <span id="keyStatus" class="status-text"></span>
+    </section>
+
+    <hr>
+
+    <!-- Grade Level -->
+    <section class="section">
+      <label for="gradeLevel">Grade Level</label>
+      <div class="slider-row">
+        <input type="range" id="gradeLevel" min="1" max="16" value="10" step="1">
+        <span id="gradeLevelValue" class="slider-value">10th Grade</span>
+      </div>
+      <p class="hint">1-8: Elementary/Middle | 9-12: High School | 13-16: College</p>
+    </section>
+
+    <!-- Grammar Quality -->
+    <section class="section">
+      <label for="grammarQuality">Grammar Quality</label>
+      <div class="slider-row">
+        <input type="range" id="grammarQuality" min="1" max="5" value="3" step="1">
+        <span id="grammarQualityValue" class="slider-value">Average</span>
+      </div>
+      <p class="hint">1: Poor (many errors) | 3: Average | 5: Perfect</p>
+    </section>
+
+    <!-- Complexity -->
+    <section class="section">
+      <label for="complexity">Complexity / Vocabulary</label>
+      <div class="slider-row">
+        <input type="range" id="complexity" min="1" max="5" value="3" step="1">
+        <span id="complexityValue" class="slider-value">Moderate</span>
+      </div>
+      <p class="hint">1: Very simple words | 3: Moderate | 5: Advanced vocabulary</p>
+    </section>
+
+    <!-- Typing Speed -->
+    <section class="section">
+      <label for="typingSpeed">Typing Speed</label>
+      <div class="slider-row">
+        <input type="range" id="typingSpeed" min="1" max="5" value="3" step="1">
+        <span id="typingSpeedValue" class="slider-value">Normal</span>
+      </div>
+      <p class="hint">1: Very slow (hunt & peck) | 3: Normal | 5: Fast typist</p>
+    </section>
+
+    <!-- Response Length -->
+    <section class="section">
+      <label for="responseLength">Response Length</label>
+      <select id="responseLength">
+        <option value="short">Short (1-2 sentences)</option>
+        <option value="medium" selected>Medium (1-2 paragraphs)</option>
+        <option value="long">Long (3-5 paragraphs)</option>
+        <option value="essay">Essay (5+ paragraphs)</option>
+      </select>
+    </section>
+
+    <hr>
+
+    <!-- Custom Prompt -->
+    <section class="section">
+      <label for="customPrompt">Additional Instructions (optional)</label>
+      <textarea id="customPrompt" rows="2" placeholder="e.g. 'Write from a first-person perspective' or 'Include 3 examples'"></textarea>
+    </section>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button id="detectBtn" class="btn btn-secondary">Detect Assignment</button>
+      <button id="generateBtn" class="btn btn-primary">Generate & Type</button>
+    </div>
+
+    <!-- Status -->
+    <div id="statusBar" class="status-bar hidden">
+      <div class="progress-track">
+        <div id="progressFill" class="progress-fill"></div>
+      </div>
+      <span id="statusText">Ready</span>
+    </div>
+
+    <!-- Detected Assignment Preview -->
+    <section id="assignmentPreview" class="section preview hidden">
+      <label>Detected Assignment</label>
+      <div id="assignmentText" class="preview-box"></div>
+    </section>
+
+    <!-- Generated Response Preview -->
+    <section id="responsePreview" class="section preview hidden">
+      <label>Generated Response</label>
+      <div id="responseText" class="preview-box"></div>
+      <div class="preview-actions">
+        <button id="typeItBtn" class="btn btn-primary btn-sm">Type It Out</button>
+        <button id="regenerateBtn" class="btn btn-secondary btn-sm">Regenerate</button>
+        <button id="copyBtn" class="btn btn-secondary btn-sm">Copy</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
