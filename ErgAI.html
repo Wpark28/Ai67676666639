@@ -11,42 +11,46 @@
   <style>
 /* ===== ROOT & RESET ===== */
 :root {
-  --bg: #000000;
-  --bg-secondary: #1c1c1e;
-  --bg-tertiary: #2c2c2e;
-  --bg-card: rgba(44,44,46,0.6);
-  --text: #ffffff;
-  --text-secondary: #8e8e93;
-  --text-tertiary: #636366;
-  --blue: #007AFF;
-  --green: #34C759;
-  --red: #FF3B30;
-  --orange: #FF9500;
-  --yellow: #FFD60A;
-  --purple: #AF52DE;
-  --indigo: #5856D6;
-  --cyan: #32D74B;
-  --pink: #FF2D55;
-  --teal: #64D2FF;
-  --tab-height: 83px;
+  --bg: #0a0a0f;
+  --bg-secondary: #16161e;
+  --bg-tertiary: #22222e;
+  --bg-card: rgba(30,30,42,0.65);
+  --text: #f0f0f5;
+  --text-secondary: #9898a8;
+  --text-tertiary: #5a5a6e;
+  --blue: #3B82F6;
+  --green: #22C55E;
+  --red: #EF4444;
+  --orange: #F97316;
+  --yellow: #EAB308;
+  --purple: #A855F7;
+  --indigo: #6366F1;
+  --cyan: #06B6D4;
+  --pink: #EC4899;
+  --teal: #14B8A6;
+  --tab-height: 80px;
   --nav-height: 56px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --radius: 16px;
-  --radius-sm: 12px;
-  --radius-xs: 8px;
+  --radius: 20px;
+  --radius-sm: 14px;
+  --radius-xs: 10px;
+  --glow: 0 0 30px rgba(59,130,246,0.08);
+  --card-border: rgba(255,255,255,0.05);
+  --card-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 0 0 0.5px rgba(255,255,255,0.04);
 }
 
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
 html, body {
   height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   user-select: none;
+  letter-spacing: -0.01em;
 }
 
 body { position: fixed; width: 100%; }
@@ -66,10 +70,10 @@ body { position: fixed; width: 100%; }
   padding: 8px 16px;
   padding-top: calc(var(--safe-top) + 8px);
   min-height: var(--nav-height);
-  background: rgba(0,0,0,0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 0.5px solid rgba(255,255,255,0.08);
+  background: rgba(10,10,15,0.88);
+  backdrop-filter: blur(30px) saturate(1.5);
+  -webkit-backdrop-filter: blur(30px) saturate(1.5);
+  border-bottom: 0.5px solid rgba(255,255,255,0.06);
   position: relative;
   z-index: 100;
 }
@@ -124,10 +128,10 @@ body { position: fixed; width: 100%; }
   justify-content: space-around;
   padding: 6px 0;
   padding-bottom: calc(var(--safe-bottom) + 6px);
-  background: rgba(28,28,30,0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 0.5px solid rgba(255,255,255,0.08);
+  background: rgba(16,16,22,0.92);
+  backdrop-filter: blur(30px) saturate(1.5);
+  -webkit-backdrop-filter: blur(30px) saturate(1.5);
+  border-top: 0.5px solid rgba(255,255,255,0.06);
   position: fixed;
   bottom: 0;
   left: 0;
@@ -170,14 +174,17 @@ body { position: fixed; width: 100%; }
 
 /* ===== CARDS ===== */
 .card {
-  background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: linear-gradient(135deg, rgba(30,30,45,0.7), rgba(20,20,32,0.6));
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
   border-radius: var(--radius);
-  padding: 16px;
-  margin-bottom: 16px;
-  border: 0.5px solid rgba(255,255,255,0.06);
+  padding: 18px;
+  margin-bottom: 14px;
+  border: 0.5px solid var(--card-border);
+  box-shadow: var(--card-shadow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
+.card:active { transform: scale(0.985); }
 
 .card-header {
   display: flex;
@@ -213,12 +220,12 @@ body { position: fixed; width: 100%; }
   font-family: inherit;
 }
 
-.btn:active { opacity: 0.7; }
-.btn-blue { background: var(--blue); color: #fff; }
-.btn-red { background: var(--red); color: #fff; }
-.btn-green { background: var(--green); color: #fff; }
-.btn-gray { background: var(--bg-tertiary); color: var(--text); }
-.btn-outline { background: none; border: 1px solid var(--blue); color: var(--blue); }
+.btn:active { opacity: 0.7; transform: scale(0.97); }
+.btn-blue { background: linear-gradient(135deg, #3B82F6, #2563EB); color: #fff; box-shadow: 0 4px 16px rgba(59,130,246,0.3); }
+.btn-red { background: linear-gradient(135deg, #EF4444, #DC2626); color: #fff; box-shadow: 0 4px 16px rgba(239,68,68,0.3); }
+.btn-green { background: linear-gradient(135deg, #22C55E, #16A34A); color: #fff; box-shadow: 0 4px 16px rgba(34,197,94,0.3); }
+.btn-gray { background: var(--bg-tertiary); color: var(--text); border: 0.5px solid rgba(255,255,255,0.08); }
+.btn-outline { background: none; border: 1px solid rgba(59,130,246,0.4); color: var(--blue); }
 
 .btn-small {
   padding: 8px 16px;
@@ -301,10 +308,11 @@ body { position: fixed; width: 100%; }
 
 .stat-card {
   text-align: center;
-  padding: 12px 8px;
+  padding: 14px 8px;
   border-radius: var(--radius-sm);
-  background: var(--bg-card);
-  backdrop-filter: blur(12px);
+  background: linear-gradient(145deg, rgba(30,30,45,0.5), rgba(18,18,28,0.5));
+  border: 0.5px solid var(--card-border);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
 }
 
 .stat-icon { font-size: 20px; margin-bottom: 6px; }
@@ -314,30 +322,32 @@ body { position: fixed; width: 100%; }
 /* ===== SEGMENTED CONTROL ===== */
 .segmented {
   display: flex;
-  background: var(--bg-tertiary);
-  border-radius: 8px;
-  padding: 2px;
+  background: rgba(22,22,30,0.8);
+  border-radius: 14px;
+  padding: 3px;
   margin-bottom: 16px;
+  border: 0.5px solid rgba(255,255,255,0.05);
 }
 
 .segmented button {
   flex: 1;
-  padding: 8px;
+  padding: 9px;
   border: none;
-  border-radius: 7px;
+  border-radius: 12px;
   background: none;
   color: var(--text-secondary);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   font-family: inherit;
-  transition: all 0.25s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .segmented button.active {
-  background: var(--bg-secondary);
+  background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(99,102,241,0.15));
   color: var(--text);
   font-weight: 600;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.15);
 }
 
 /* ===== LIST ===== */
@@ -357,19 +367,19 @@ body { position: fixed; width: 100%; }
 .list-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  background: var(--bg-card);
+  gap: 14px;
+  padding: 15px 18px;
+  background: linear-gradient(135deg, rgba(30,30,45,0.55), rgba(20,20,32,0.45));
   border-radius: 0;
-  border-bottom: 0.5px solid rgba(255,255,255,0.06);
+  border-bottom: 0.5px solid rgba(255,255,255,0.04);
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.25s ease;
 }
 
 .list-item:first-of-type { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
 .list-item:last-of-type { border-radius: 0 0 var(--radius-sm) var(--radius-sm); border-bottom: none; }
 .list-item:only-of-type { border-radius: var(--radius-sm); }
-.list-item:active { background: var(--bg-tertiary); }
+.list-item:active { background: var(--bg-tertiary); transform: scale(0.98); }
 
 .list-icon {
   width: 28px;
@@ -402,34 +412,36 @@ body { position: fixed; width: 100%; }
 
 .form-input, .form-select {
   width: 100%;
-  padding: 12px 16px;
+  padding: 13px 16px;
   border-radius: var(--radius-xs);
-  border: 0.5px solid rgba(255,255,255,0.1);
-  background: var(--bg-tertiary);
+  border: 0.5px solid rgba(255,255,255,0.08);
+  background: rgba(22,22,32,0.7);
   color: var(--text);
   font-size: 16px;
   font-family: inherit;
   outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .form-input:focus, .form-select:focus {
   border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
 }
 
 .form-input::placeholder { color: var(--text-tertiary); }
 
 /* ===== PROGRESS BARS ===== */
 .progress-bar {
-  height: 8px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 4px;
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 3px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  border-radius: 4px;
-  transition: width 0.6s ease;
+  border-radius: 3px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ===== BATTERY ===== */
@@ -471,10 +483,13 @@ body { position: fixed; width: 100%; }
 
 .bio-card {
   text-align: center;
-  padding: 12px;
+  padding: 14px;
   border-radius: var(--radius-sm);
-  background: rgba(255,255,255,0.03);
+  background: linear-gradient(145deg, rgba(30,30,45,0.4), rgba(15,15,25,0.3));
+  border: 0.5px solid rgba(255,255,255,0.04);
+  transition: transform 0.2s ease;
 }
+.bio-card:active { transform: scale(0.95); }
 
 .bio-icon { font-size: 22px; margin-bottom: 6px; }
 .bio-value { font-size: 16px; font-weight: 700; }
@@ -673,14 +688,15 @@ body { position: fixed; width: 100%; }
 }
 
 .modal-sheet {
-  background: var(--bg-secondary);
-  border-radius: 16px 16px 0 0;
+  background: linear-gradient(180deg, #1e1e2e, #14141e);
+  border-radius: 24px 24px 0 0;
   width: 100%;
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
   padding: 20px;
-  animation: slideUp 0.3s ease;
+  animation: slideUp 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  border-top: 0.5px solid rgba(255,255,255,0.08);
 }
 
 @keyframes slideUp {
@@ -803,8 +819,71 @@ body { position: fixed; width: 100%; }
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
 .pulse { animation: pulse 1.5s ease infinite; }
 
-@keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
-.fade-in { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+.fade-in { animation: fadeIn 0.4s cubic-bezier(0.32, 0.72, 0, 1); }
+
+/* ===== OCR SPINNER ===== */
+@keyframes spin { to { transform: rotate(360deg); } }
+.ocr-spinner {
+  width: 28px; height: 28px;
+  border: 3px solid rgba(59,130,246,0.2);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto;
+}
+.ocr-status {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* ===== UNIT TOGGLE ===== */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 0.5px solid rgba(255,255,255,0.05);
+}
+.toggle-row:last-child { border-bottom: none; }
+.toggle-label { font-size: 15px; }
+.toggle-sublabel { font-size: 12px; color: var(--text-secondary); }
+.toggle-switch {
+  position: relative;
+  width: 51px;
+  height: 31px;
+  background: var(--bg-tertiary);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+  border: none;
+  flex-shrink: 0;
+}
+.toggle-switch.active { background: var(--green); }
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  width: 27px; height: 27px;
+  background: #fff;
+  border-radius: 50%;
+  top: 2px; left: 2px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.toggle-switch.active::after { transform: translateX(20px); }
+
+/* ===== HEALTH IMPORT ===== */
+.health-card {
+  background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(6,182,212,0.05));
+  border: 0.5px solid rgba(34,197,94,0.15);
+}
+.health-icon-large {
+  font-size: 52px;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 4px 8px rgba(34,197,94,0.3));
+}
 
 /* ===== UTILITIES ===== */
 .flex { display: flex; }
@@ -844,6 +923,7 @@ body { position: fixed; width: 100%; }
 .bg-green { background: var(--green); }
 .bg-orange { background: var(--orange); }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 <body>
   <div id="app">
@@ -1071,8 +1151,8 @@ function createDefaultProfile() {
     experienceLevel: 'intermediate',
     maxHR: 195,
     restingHR: 60,
+    weightUnit: 'kg',
     pr2k: null,
-    pr5k: null,
     pr6k: null,
     pr30min: null,
     totalWorkouts: 0,
@@ -1091,6 +1171,12 @@ function createDefaultProfile() {
     fatTarget: 80
   };
 }
+
+// ===== Unit Conversion =====
+function kgToLbs(kg) { return Math.round(kg * 2.20462 * 10) / 10; }
+function lbsToKg(lbs) { return Math.round(lbs / 2.20462 * 10) / 10; }
+function displayWeight(kg, unit) { return unit === 'lbs' ? kgToLbs(kg) : kg; }
+function weightLabel(unit) { return unit === 'lbs' ? 'lbs' : 'kg'; }
 
 // ===== Food Library =====
 const FoodLibrary = [
@@ -1803,6 +1889,18 @@ const Views = {
         <div class="stat-value">${profile?.pr2k ? formatSplit(profile.pr2k) : '--'}</div>
         <div class="stat-label">2K PR</div>
       </div>
+    </div>
+    <div class="stats-grid" style="margin-top:10px;grid-template-columns:1fr 1fr">
+      <div class="stat-card">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-value">${profile?.pr6k ? formatSplit(profile.pr6k) : '--'}</div>
+        <div class="stat-label">6K PR</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📈</div>
+        <div class="stat-value">${profile?.fitnessScore ? Math.round(profile.fitnessScore) : '--'}</div>
+        <div class="stat-label">Fitness Score</div>
+      </div>
     </div>`;
 
     // Recent Scores
@@ -2182,12 +2280,12 @@ const Views = {
       <div class="text-center" style="padding:20px 0">
         <div style="font-size:48px;margin-bottom:12px">📸</div>
         <div style="font-size:20px;font-weight:700;margin-bottom:8px">Capture Erg Score</div>
-        <div class="text-sm color-secondary mb-16">Take a photo of your Concept2 monitor or enter scores manually</div>
+        <div class="text-sm color-secondary mb-16">Snap or upload a photo of your C2 monitor — we'll auto-detect the workout data</div>
       </div>
 
-      <video id="camera-video" autoplay playsinline style="display:none;width:100%;border-radius:16px;margin-bottom:16px"></video>
+      <video id="camera-video" autoplay playsinline style="display:none;width:100%;border-radius:20px;margin-bottom:16px"></video>
       <canvas id="camera-canvas"></canvas>
-      <img id="captured-img" style="display:none;width:100%;border-radius:16px;margin-bottom:16px" />
+      <img id="captured-img" style="display:none;width:100%;border-radius:20px;margin-bottom:16px" />
 
       <div class="flex gap-8 mb-16">
         <button class="btn btn-blue" onclick="App.startCamera()" id="btn-camera">
@@ -2201,8 +2299,8 @@ const Views = {
       <input type="file" id="photo-upload" accept="image/*" style="display:none" />
 
       <div id="capture-result" style="display:none">
-        <div class="card">
-          <div class="card-title mb-8">Detected Score</div>
+        <div class="card" style="border:0.5px solid rgba(59,130,246,0.2)">
+          <div class="card-title mb-8">Auto-Detected Data</div>
           <div id="ocr-result"></div>
         </div>
       </div>
@@ -2213,8 +2311,8 @@ const Views = {
           <label class="form-label">Workout Type</label>
           <select class="form-select" id="score-type">
             <option value="2k">2K Test</option>
+            <option value="6k">6K Test</option>
             <option value="5k">5K</option>
-            <option value="6k">6K</option>
             <option value="10k">10K</option>
             <option value="30min">30 Min</option>
             <option value="60min">60 Min</option>
@@ -2401,6 +2499,15 @@ const Views = {
       </div>
 
       <div class="list-section">
+        <div class="list-section-title">Health</div>
+        <div class="list-item" onclick="App.navigate('health')">
+          <div class="list-icon" style="background:rgba(34,197,94,0.15);color:var(--green)">&#127973;</div>
+          <div class="list-item-content"><div class="list-item-title">Apple Health</div><div class="list-item-subtitle">Import health data from Apple Health export</div></div>
+          <div class="list-arrow">&#8250;</div>
+        </div>
+      </div>
+
+      <div class="list-section">
         <div class="list-section-title">Settings</div>
         <div class="list-item" onclick="App.navigate('profile')">
           <div class="list-icon" style="background:var(--orange)22;color:var(--orange)">&#128100;</div>
@@ -2526,7 +2633,7 @@ const Views = {
             <div class="text-xs color-secondary">${s.exercises?.length || 0} exercises &middot; ${s.totalSets || 0} sets &middot; ${formatDate(s.date)}</div>
           </div>
           <div class="text-right">
-            <div class="font-bold">${s.totalVolume >= 1000 ? (s.totalVolume / 1000).toFixed(1) + 'k' : Math.round(s.totalVolume)} kg</div>
+            <div class="font-bold">${s.totalVolume >= 1000 ? (s.totalVolume / 1000).toFixed(1) + 'k' : Math.round(s.totalVolume)} ${weightLabel(App._weightUnit || 'kg')}</div>
             <div class="text-xs color-secondary">Strain: ${(s.strainScore || 0).toFixed(1)}</div>
           </div>
         </div>`;
@@ -2552,14 +2659,14 @@ const Views = {
           <span class="text-xs color-secondary">${ex.muscleGroup}</span>
         </div>
         <div class="set-row" style="color:var(--text-secondary)">
-          <span>Set</span><span>Weight (kg)</span><span>Reps</span><span>RPE</span>
+          <span>Set</span><span>Weight (${weightLabel(App._weightUnit || 'kg')})</span><span>Reps</span><span>RPE</span>
         </div>`;
 
       for (let j = 0; j < ex.sets.length; j++) {
         const s = ex.sets[j];
         html += `<div class="set-row">
           <span class="set-number">${j + 1}</span>
-          <span class="font-bold">${s.weightKg}</span>
+          <span class="font-bold">${displayWeight(s.weightKg, App._weightUnit || 'kg')}</span>
           <span>${s.reps}</span>
           <span class="color-secondary">${s.rpe || '-'}</span>
         </div>`;
@@ -2721,8 +2828,8 @@ const Views = {
             <input class="form-input" type="number" id="prof-age" value="${profile.age}">
           </div>
           <div class="form-group" style="flex:1">
-            <label class="form-label">Weight (kg)</label>
-            <input class="form-input" type="number" id="prof-weight" value="${profile.weight}">
+            <label class="form-label">Weight (${profile.weightUnit === 'lbs' ? 'lbs' : 'kg'})</label>
+            <input class="form-input" type="number" id="prof-weight" value="${profile.weightUnit === 'lbs' ? kgToLbs(profile.weight) : profile.weight}">
           </div>
         </div>
         <div class="flex gap-8">
@@ -2755,16 +2862,27 @@ const Views = {
       </div>
 
       <div class="card">
-        <div class="card-title mb-8">Personal Records (split in seconds)</div>
+        <div class="card-title mb-8">Personal Records (split /500m)</div>
         <div class="flex gap-8">
           <div class="form-group" style="flex:1">
             <label class="form-label">2K Split</label>
-            <input class="form-input" type="text" id="prof-2k" value="${profile.pr2k || ''}" placeholder="1:45.0">
+            <input class="form-input" type="text" id="prof-2k" value="${profile.pr2k ? formatSplit(profile.pr2k) : ''}" placeholder="1:45.0">
           </div>
           <div class="form-group" style="flex:1">
-            <label class="form-label">5K Split</label>
-            <input class="form-input" type="text" id="prof-5k" value="${profile.pr5k || ''}" placeholder="1:55.0">
+            <label class="form-label">6K Split</label>
+            <input class="form-input" type="text" id="prof-6k" value="${profile.pr6k ? formatSplit(profile.pr6k) : ''}" placeholder="1:55.0">
           </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title mb-8">Units</div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Weight Unit</div>
+            <div class="toggle-sublabel" id="unit-display">${profile.weightUnit === 'lbs' ? 'Pounds (lbs)' : 'Kilograms (kg)'}</div>
+          </div>
+          <button class="toggle-switch ${profile.weightUnit === 'lbs' ? 'active' : ''}" id="unit-toggle" onclick="App.toggleWeightUnit()"></button>
         </div>
       </div>
 
@@ -2799,6 +2917,88 @@ const Views = {
   // =========================================
   // SIMULATE DATA
   // =========================================
+  // =========================================
+  // APPLE HEALTH IMPORT
+  // =========================================
+  health() {
+    return `<div class="fade-in">
+      <div class="text-center" style="padding:20px 0">
+        <div class="health-icon-large">&#127973;</div>
+        <div style="font-size:20px;font-weight:700;margin-bottom:8px">Apple Health</div>
+        <div class="text-sm color-secondary mb-16">Import your health data to power recovery tracking</div>
+      </div>
+
+      <div class="card health-card">
+        <div class="card-title mb-8">Import Health Export</div>
+        <div class="text-sm color-secondary" style="line-height:1.5;margin-bottom:16px">
+          1. Open the <b>Health</b> app on your iPhone<br>
+          2. Tap your profile icon &#8594; <b>Export All Health Data</b><br>
+          3. Save/share the <b>export.xml</b> file<br>
+          4. Upload it below
+        </div>
+        <input type="file" id="health-import" accept=".xml,.zip" style="display:none" />
+        <button class="btn btn-green" onclick="App.importHealthData()">
+          <span>&#128229;</span> Import Health Data
+        </button>
+      </div>
+
+      <div id="health-import-result" style="display:none"></div>
+
+      <div class="card">
+        <div class="card-title mb-8">Quick Health Entry</div>
+        <div class="text-sm color-secondary mb-16">Or manually enter today's health data from your Apple Watch / Health app.</div>
+        <div class="flex gap-8">
+          <div class="form-group" style="flex:1">
+            <label class="form-label">HRV (ms)</label>
+            <input class="form-input" type="number" id="health-hrv" placeholder="55">
+          </div>
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Resting HR</label>
+            <input class="form-input" type="number" id="health-rhr" placeholder="58">
+          </div>
+        </div>
+        <div class="flex gap-8">
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Blood O2 (%)</label>
+            <input class="form-input" type="number" id="health-spo2" placeholder="97" step="0.1">
+          </div>
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Resp Rate</label>
+            <input class="form-input" type="number" id="health-rr" placeholder="15" step="0.1">
+          </div>
+        </div>
+        <div class="flex gap-8">
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Sleep (hours)</label>
+            <input class="form-input" type="number" id="health-sleep" placeholder="7.5" step="0.1">
+          </div>
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Steps</label>
+            <input class="form-input" type="number" id="health-steps" placeholder="8000">
+          </div>
+        </div>
+        <div class="flex gap-8">
+          <div class="form-group" style="flex:1">
+            <label class="form-label">Deep Sleep (min)</label>
+            <input class="form-input" type="number" id="health-deep" placeholder="70">
+          </div>
+          <div class="form-group" style="flex:1">
+            <label class="form-label">REM Sleep (min)</label>
+            <input class="form-input" type="number" id="health-rem" placeholder="90">
+          </div>
+        </div>
+        <button class="btn btn-blue mt-8" onclick="App.saveHealthEntry()">Save Health Data</button>
+      </div>
+
+      <div class="card" style="background:rgba(99,102,241,0.06)">
+        <div class="flex items-center gap-8">
+          <span>&#128161;</span>
+          <span class="text-sm color-secondary">For best results, log your health data each morning when your Apple Watch has fresh overnight readings.</span>
+        </div>
+      </div>
+    </div>`;
+  },
+
   simulate() {
     return `<div class="fade-in">
       <div class="text-center" style="padding:20px 0">
@@ -2815,7 +3015,7 @@ const Views = {
           <ul style="margin-top:8px;padding-left:20px;line-height:1.6">
             <li>A sample athlete profile</li>
             <li>7 days of recovery/sleep/strain data</li>
-            <li>Several erg scores (2K, 5K, steady state)</li>
+            <li>Several erg scores (2K, 6K, steady state)</li>
             <li>A gym session with exercises</li>
             <li>Some calorie entries</li>
           </ul>
@@ -2857,6 +3057,7 @@ const App = {
 
     // Check if profile exists
     const profile = await Store.getProfile();
+    this._weightUnit = profile?.weightUnit || 'kg';
     if (!profile) {
       this.navigate('profile');
     } else {
@@ -2902,7 +3103,7 @@ const App = {
     const titles = {
       hr: 'Heart Rate', gym: 'Gym Tracker', history: 'Erg History',
       calories: 'Nutrition', profile: 'Profile', simulate: 'Simulate Data',
-      capture: 'Capture'
+      capture: 'Capture', health: 'Apple Health'
     };
 
     document.getElementById('nav-title').textContent = titles[view] || 'ErgAI';
@@ -2952,6 +3153,7 @@ const App = {
           case 'calories': html = await Views.calories(); break;
           case 'profile': html = await Views.profile(); break;
           case 'simulate': html = Views.simulate(); break;
+          case 'health': html = Views.health(); break;
           case 'capture': html = Views.capture(); break;
           default: html = await Views.dashboard();
         }
@@ -3035,8 +3237,8 @@ const App = {
       if (type === '2k' && splitSeconds && (!profile.pr2k || splitSeconds < profile.pr2k)) {
         profile.pr2k = splitSeconds;
       }
-      if (type === '5k' && splitSeconds && (!profile.pr5k || splitSeconds < profile.pr5k)) {
-        profile.pr5k = splitSeconds;
+      if (type === '6k' && splitSeconds && (!profile.pr6k || splitSeconds < profile.pr6k)) {
+        profile.pr6k = splitSeconds;
       }
 
       await Store.saveProfile(profile);
@@ -3085,11 +3287,7 @@ const App = {
       this.cameraStream = null;
     }
 
-    // Show result area with message
-    document.getElementById('capture-result').style.display = 'block';
-    document.getElementById('ocr-result').innerHTML = `
-      <div class="text-sm color-secondary">Photo captured. In-browser OCR is limited — please verify and enter values manually below, or use a native app for automatic OCR.</div>
-    `;
+    this.runOCR(dataUrl);
   },
 
   uploadPhoto() {
@@ -3102,14 +3300,108 @@ const App = {
         const img = document.getElementById('captured-img');
         img.src = ev.target.result;
         img.style.display = 'block';
-        document.getElementById('capture-result').style.display = 'block';
-        document.getElementById('ocr-result').innerHTML = `
-          <div class="text-sm color-secondary">Photo uploaded. Enter the values you see on the erg screen into the fields below.</div>
-        `;
+        this.runOCR(ev.target.result);
       };
       reader.readAsDataURL(file);
     };
     input.click();
+  },
+
+  async runOCR(imageData) {
+    const resultDiv = document.getElementById('capture-result');
+    const ocrDiv = document.getElementById('ocr-result');
+    resultDiv.style.display = 'block';
+    ocrDiv.innerHTML = '<div class="ocr-status"><div class="ocr-spinner"></div><div style="margin-top:12px">Analyzing erg screen...</div></div>';
+
+    try {
+      const result = await Tesseract.recognize(imageData, 'eng', {
+        logger: m => {
+          if (m.status === 'recognizing text' && m.progress) {
+            ocrDiv.innerHTML = `<div class="ocr-status"><div class="ocr-spinner"></div><div style="margin-top:12px">Reading... ${Math.round(m.progress * 100)}%</div></div>`;
+          }
+        }
+      });
+
+      const text = result.data.text;
+      const parsed = this.parseErgText(text);
+
+      let html = '';
+      if (parsed.found) {
+        html += '<div style="margin-bottom:12px"><span style="color:var(--green);font-weight:600">&#10003; Data detected</span></div>';
+        html += '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px">Fields auto-filled below. Verify and adjust as needed.</div>';
+
+        if (parsed.time) { html += `<div class="flex justify-between text-sm" style="padding:4px 0"><span class="color-secondary">Time</span><span class="font-bold">${parsed.time}</span></div>`; document.getElementById('score-time').value = parsed.time; }
+        if (parsed.distance) { html += `<div class="flex justify-between text-sm" style="padding:4px 0"><span class="color-secondary">Distance</span><span class="font-bold">${parsed.distance}m</span></div>`; document.getElementById('score-distance').value = parsed.distance; }
+        if (parsed.split) { html += `<div class="flex justify-between text-sm" style="padding:4px 0"><span class="color-secondary">Split</span><span class="font-bold">${parsed.split} /500m</span></div>`; document.getElementById('score-split').value = parsed.split; }
+        if (parsed.strokeRate) { html += `<div class="flex justify-between text-sm" style="padding:4px 0"><span class="color-secondary">Stroke Rate</span><span class="font-bold">${parsed.strokeRate} s/m</span></div>`; document.getElementById('score-sr').value = parsed.strokeRate; }
+        if (parsed.calories) { html += `<div class="flex justify-between text-sm" style="padding:4px 0"><span class="color-secondary">Calories</span><span class="font-bold">${parsed.calories}</span></div>`; document.getElementById('score-cal').value = parsed.calories; }
+
+        // Auto-detect workout type from distance
+        if (parsed.distance) {
+          const d = parseInt(parsed.distance);
+          if (d >= 1900 && d <= 2100) document.getElementById('score-type').value = '2k';
+          else if (d >= 5900 && d <= 6100) document.getElementById('score-type').value = '6k';
+          else if (d >= 4900 && d <= 5100) document.getElementById('score-type').value = '5k';
+          else if (d >= 9800 && d <= 10200) document.getElementById('score-type').value = '10k';
+        }
+      } else {
+        html = '<div class="text-sm color-secondary">Could not auto-detect values. Enter your scores manually below.</div>';
+        if (text.trim()) html += `<div class="text-xs color-tertiary" style="margin-top:8px;word-break:break-all">Raw text: ${text.substring(0, 200)}</div>`;
+      }
+
+      ocrDiv.innerHTML = html;
+    } catch (e) {
+      console.error('OCR error:', e);
+      ocrDiv.innerHTML = '<div class="text-sm color-secondary">OCR failed — enter values manually below.</div>';
+    }
+  },
+
+  parseErgText(text) {
+    const result = { found: false };
+    if (!text) return result;
+
+    // Normalize: collapse whitespace, fix common OCR misreads
+    const t = text.replace(/[|l]/g, '1').replace(/[oO]/g, '0');
+
+    // Time pattern: m:ss.s or mm:ss.s
+    const timeMatch = text.match(/(\d{1,2}:\d{2}\.\d)/);
+    if (timeMatch) { result.time = timeMatch[1]; result.found = true; }
+
+    // Split pattern: often near /500m or appears as m:ss.s format
+    const splitMatches = text.match(/(\d:\d{2}\.\d)/g);
+    if (splitMatches && splitMatches.length >= 2) {
+      // First is usually total time, second is split
+      result.time = splitMatches[0];
+      result.split = splitMatches[1];
+      result.found = true;
+    } else if (splitMatches && splitMatches.length === 1) {
+      // Could be either — check context
+      const s500 = text.match(/\/500m/i);
+      if (s500) { result.split = splitMatches[0]; }
+      else { result.time = splitMatches[0]; }
+      result.found = true;
+    }
+
+    // Distance pattern: 4-5 digit number, often followed by 'm'
+    const distMatch = text.match(/(\d{3,5})\s*m?\b/);
+    if (distMatch) {
+      const d = parseInt(distMatch[1]);
+      if (d >= 500 && d <= 42195) { result.distance = d; result.found = true; }
+    }
+
+    // Stroke rate: number near s/m or spm or r/m
+    const srMatch = text.match(/(\d{2})\s*(?:s\/m|spm|r\/m|s\/min)/i);
+    if (srMatch) { result.strokeRate = parseInt(srMatch[1]); result.found = true; }
+    else {
+      const srAlt = text.match(/(?:s\/m|spm|rate)[\s:]*(\d{2})/i);
+      if (srAlt) { result.strokeRate = parseInt(srAlt[1]); result.found = true; }
+    }
+
+    // Calories
+    const calMatch = text.match(/(\d{2,4})\s*(?:cal|Cal|kcal)/i);
+    if (calMatch) { result.calories = parseInt(calMatch[1]); result.found = true; }
+
+    return result;
   },
 
   // ===== Profile =====
@@ -3119,7 +3411,8 @@ const App = {
 
     profile.name = document.getElementById('prof-name').value;
     profile.age = parseInt(document.getElementById('prof-age').value) || 20;
-    profile.weight = parseInt(document.getElementById('prof-weight').value) || 80;
+    const weightVal = parseFloat(document.getElementById('prof-weight').value) || 80;
+    profile.weight = profile.weightUnit === 'lbs' ? lbsToKg(weightVal) : weightVal;
     profile.height = parseInt(document.getElementById('prof-height').value) || 180;
     profile.gender = document.getElementById('prof-gender').value;
     profile.maxHR = parseInt(document.getElementById('prof-maxhr').value) || 195;
@@ -3131,12 +3424,20 @@ const App = {
 
     const pr2k = document.getElementById('prof-2k').value;
     if (pr2k) profile.pr2k = this.parseSplitToSeconds(pr2k);
-    const pr5k = document.getElementById('prof-5k').value;
-    if (pr5k) profile.pr5k = this.parseSplitToSeconds(pr5k);
+    const pr6k = document.getElementById('prof-6k').value;
+    if (pr6k) profile.pr6k = this.parseSplitToSeconds(pr6k);
 
     await Store.saveProfile(profile);
     alert('Profile saved!');
     this.switchTab('dashboard');
+  },
+
+  async toggleWeightUnit() {
+    const profile = (await Store.getProfile()) || createDefaultProfile();
+    profile.weightUnit = profile.weightUnit === 'lbs' ? 'kg' : 'lbs';
+    this._weightUnit = profile.weightUnit;
+    await Store.saveProfile(profile);
+    this.render();
   },
 
   // ===== Bluetooth HR =====
@@ -3204,14 +3505,17 @@ const App = {
     if (!ex) return;
 
     const lastSet = ex.sets[ex.sets.length - 1];
-    const weight = prompt('Weight (kg):', lastSet?.weightKg || '60');
+    const unit = this._weightUnit || 'kg';
+    const defaultW = lastSet ? displayWeight(lastSet.weightKg, unit) : (unit === 'lbs' ? '135' : '60');
+    const weight = prompt(`Weight (${unit}):`, defaultW);
     if (!weight) return;
     const reps = prompt('Reps:', lastSet?.reps || '10');
     if (!reps) return;
     const rpe = prompt('RPE (1-10, optional):', '');
 
+    const wVal = parseFloat(weight);
     ex.sets.push({
-      weightKg: parseFloat(weight),
+      weightKg: unit === 'lbs' ? lbsToKg(wVal) : wVal,
       reps: parseInt(reps),
       rpe: rpe ? parseFloat(rpe) : null,
       isWarmup: false
@@ -3248,7 +3552,9 @@ const App = {
     await Store.saveGymSession(session);
     this.activeGymSession = null;
 
-    alert(`Session saved! Volume: ${totalVol >= 1000 ? (totalVol/1000).toFixed(1) + 'k' : Math.round(totalVol)} kg, Strain: ${session.strainScore.toFixed(1)}`);
+    const unit = this._weightUnit || 'kg';
+    const dispVol = displayWeight(totalVol, unit);
+    alert(`Session saved! Volume: ${dispVol >= 1000 ? (dispVol/1000).toFixed(1) + 'k' : Math.round(dispVol)} ${unit}, Strain: ${session.strainScore.toFixed(1)}`);
     this.render();
   },
 
@@ -3285,6 +3591,140 @@ const App = {
     this.render();
   },
 
+  // ===== Health Import =====
+
+  importHealthData() {
+    const input = document.getElementById('health-import');
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const resultDiv = document.getElementById('health-import-result');
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = '<div class="card"><div class="ocr-status"><div class="ocr-spinner"></div><div style="margin-top:12px">Parsing health data...</div></div></div>';
+
+      try {
+        const text = await file.text();
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(text, 'text/xml');
+        const records = xml.querySelectorAll('Record');
+
+        let hrv = [], rhr = [], spo2 = [], respRate = [], steps = 0, sleepMin = 0, deepMin = 0, remMin = 0;
+        const today = new Date().toDateString();
+
+        records.forEach(r => {
+          const type = r.getAttribute('type');
+          const date = new Date(r.getAttribute('startDate'));
+          if (date.toDateString() !== today) return;
+
+          const val = parseFloat(r.getAttribute('value'));
+
+          if (type === 'HKQuantityTypeIdentifierHeartRateVariabilitySDNN') hrv.push(val);
+          else if (type === 'HKQuantityTypeIdentifierRestingHeartRate') rhr.push(val);
+          else if (type === 'HKQuantityTypeIdentifierOxygenSaturation') spo2.push(val * 100);
+          else if (type === 'HKQuantityTypeIdentifierRespiratoryRate') respRate.push(val);
+          else if (type === 'HKQuantityTypeIdentifierStepCount') steps += val;
+          else if (type === 'HKCategoryTypeIdentifierSleepAnalysis') {
+            const end = new Date(r.getAttribute('endDate'));
+            const mins = (end - date) / 60000;
+            const sleepVal = r.getAttribute('value');
+            if (sleepVal === 'HKCategoryValueSleepAnalysisAsleepDeep') deepMin += mins;
+            else if (sleepVal === 'HKCategoryValueSleepAnalysisAsleepREM') remMin += mins;
+            else if (sleepVal && sleepVal.includes('Asleep')) sleepMin += mins;
+          }
+        });
+
+        const avg = arr => arr.length ? arr.reduce((a,b) => a+b) / arr.length : null;
+
+        const status = {
+          date: new Date().toISOString(),
+          hrv: avg(hrv),
+          rhr: avg(rhr),
+          bloodOxygen: avg(spo2),
+          respiratoryRate: avg(respRate),
+          steps: Math.round(steps),
+          totalSleepMinutes: Math.round(sleepMin) || 0,
+          deepSleepMinutes: Math.round(deepMin) || 0,
+          remSleepMinutes: Math.round(remMin) || 0,
+          lightSleepMinutes: Math.max(0, Math.round(sleepMin - deepMin - remMin)),
+          awakeMinutes: 0,
+          wristTemp: null,
+          strainScore: 0,
+          activeCalories: 0,
+          activeMinutes: 0,
+          energyDrains: []
+        };
+
+        // Calculate scores
+        const baselines = await Store.getBaselines();
+        status.recoveryScore = await RecoveryEngine.calculateRecoveryScore(status, baselines);
+        status.sleepScore = RecoveryEngine.calculateSleepScore(status.totalSleepMinutes, status.deepSleepMinutes, status.remSleepMinutes);
+        status.energyBaseline = RecoveryEngine.calculateBaselineEnergy(status.recoveryScore, status.sleepScore);
+        status.energyLevel = status.energyBaseline;
+
+        // Update baselines
+        const newBaselines = RecoveryEngine.updateBaselines(baselines, status);
+        await Store.saveBaselines(newBaselines);
+        await Store.saveDailyStatus(status);
+
+        const count = records.length;
+        resultDiv.innerHTML = `<div class="card health-card">
+          <div style="color:var(--green);font-weight:600;margin-bottom:8px">&#10003; Health data imported</div>
+          <div class="text-sm color-secondary">Processed ${count.toLocaleString()} records. Recovery score: <b>${Math.round(status.recoveryScore)}%</b></div>
+        </div>`;
+      } catch (err) {
+        console.error('Health import error:', err);
+        resultDiv.innerHTML = '<div class="card"><div class="text-sm color-red">Failed to parse health data. Make sure you uploaded the export.xml file from Apple Health.</div></div>';
+      }
+    };
+    input.click();
+  },
+
+  async saveHealthEntry() {
+    const hrv = parseFloat(document.getElementById('health-hrv').value) || null;
+    const rhr = parseFloat(document.getElementById('health-rhr').value) || null;
+    const spo2 = parseFloat(document.getElementById('health-spo2').value) || null;
+    const rr = parseFloat(document.getElementById('health-rr').value) || null;
+    const sleepH = parseFloat(document.getElementById('health-sleep').value) || 0;
+    const steps = parseInt(document.getElementById('health-steps').value) || 0;
+    const deep = parseInt(document.getElementById('health-deep').value) || 0;
+    const rem = parseInt(document.getElementById('health-rem').value) || 0;
+    const totalSleepMin = Math.round(sleepH * 60);
+    const lightMin = Math.max(0, totalSleepMin - deep - rem);
+
+    const status = {
+      date: new Date().toISOString(),
+      hrv: hrv,
+      rhr: rhr,
+      bloodOxygen: spo2,
+      respiratoryRate: rr,
+      steps: steps,
+      totalSleepMinutes: totalSleepMin,
+      deepSleepMinutes: deep,
+      remSleepMinutes: rem,
+      lightSleepMinutes: lightMin,
+      awakeMinutes: 0,
+      wristTemp: null,
+      strainScore: 0,
+      activeCalories: 0,
+      activeMinutes: 0,
+      energyDrains: []
+    };
+
+    const baselines = await Store.getBaselines();
+    status.recoveryScore = await RecoveryEngine.calculateRecoveryScore(status, baselines);
+    status.sleepScore = RecoveryEngine.calculateSleepScore(totalSleepMin, deep, rem);
+    status.energyBaseline = RecoveryEngine.calculateBaselineEnergy(status.recoveryScore, status.sleepScore);
+    status.energyLevel = status.energyBaseline;
+
+    const newBaselines = RecoveryEngine.updateBaselines(baselines, status);
+    await Store.saveBaselines(newBaselines);
+    await Store.saveDailyStatus(status);
+
+    alert(`Health data saved! Recovery: ${Math.round(status.recoveryScore)}%`);
+    this.switchTab('body');
+  },
+
   // ===== Sample Data Generation =====
 
   async generateSampleData() {
@@ -3297,7 +3737,7 @@ const App = {
     profile.maxHR = 195;
     profile.restingHR = 55;
     profile.pr2k = 105; // 1:45.0
-    profile.pr5k = 115; // 1:55.0
+    profile.pr6k = 117; // 1:57.0
     profile.totalWorkouts = 47;
     profile.totalLifetimeMeters = 892000;
     profile.currentWeekSessions = 4;
@@ -3311,7 +3751,7 @@ const App = {
     // Erg Scores
     const scores = [
       { workoutType: '2k', splitSeconds: 105, distance: 2000, strokeRate: 30, avgHR: 182, date: new Date(Date.now() - 86400000 * 2).toISOString() },
-      { workoutType: '5k', splitSeconds: 115.5, distance: 5000, strokeRate: 24, avgHR: 168, date: new Date(Date.now() - 86400000 * 4).toISOString() },
+      { workoutType: '6k', splitSeconds: 117, distance: 6000, strokeRate: 24, avgHR: 168, date: new Date(Date.now() - 86400000 * 4).toISOString() },
       { workoutType: 'steady_state', splitSeconds: 125, distance: 10000, strokeRate: 20, avgHR: 148, date: new Date(Date.now() - 86400000 * 5).toISOString() },
       { workoutType: '2k', splitSeconds: 106.5, distance: 2000, strokeRate: 29, avgHR: 180, date: new Date(Date.now() - 86400000 * 10).toISOString() },
       { workoutType: 'interval', splitSeconds: 100, distance: 4000, strokeRate: 28, avgHR: 175, date: new Date(Date.now() - 86400000 * 7).toISOString() },
