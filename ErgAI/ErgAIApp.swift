@@ -13,7 +13,13 @@ struct ErgAIApp: App {
             HeartRateSession.self,
             AthleteProfile.self,
             WorkoutPlan.self,
-            WeekSummary.self
+            WeekSummary.self,
+            GymExercise.self,
+            GymSession.self,
+            CalorieEntry.self,
+            DailyNutrition.self,
+            DailyStatus.self,
+            RecoveryTrend.self
         ])
     }
 }

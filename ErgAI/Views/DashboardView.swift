@@ -6,11 +6,14 @@ struct DashboardView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \ErgScore.date, order: .reverse) private var scores: [ErgScore]
     @Query private var profiles: [AthleteProfile]
+    @Query(sort: \DailyStatus.date, order: .reverse) private var statuses: [DailyStatus]
+    @Query(sort: \GymSession.date, order: .reverse) private var gymSessions: [GymSession]
 
     @StateObject private var aiCoach = AICoachService()
     @State private var showingProfileSetup = false
 
     private var profile: AthleteProfile? { profiles.first }
+    private var todayStatus: DailyStatus? { statuses.first }
 
     var body: some View {
         NavigationStack {
@@ -18,6 +21,11 @@ struct DashboardView: View {
                 VStack(spacing: 20) {
                     // Welcome / Profile Header
                     headerSection
+
+                    // Recovery / Strain / Energy at a glance
+                    if let status = todayStatus {
+                        bodyStatusStrip(status)
+                    }
 
                     // Today's AI Recommendation
                     if let rec = aiCoach.todayRecommendation {
@@ -335,6 +343,54 @@ struct DashboardView: View {
                 .font(.caption2)
                 .foregroundStyle(.secondary)
         }
+    }
+
+    // MARK: - Body Status Strip
+
+    private func bodyStatusStrip(_ status: DailyStatus) -> some View {
+        HStack(spacing: 12) {
+            bodyStatusItem(
+                "Recovery",
+                value: "\(Int(status.recoveryScore))%",
+                color: status.recoveryCategory == .green ? .green : (status.recoveryCategory == .yellow ? .yellow : .red),
+                icon: "heart.text.square.fill"
+            )
+            bodyStatusItem(
+                "Strain",
+                value: String(format: "%.1f", status.strainScore),
+                color: status.strainScore < 10 ? .blue : (status.strainScore < 15 ? .orange : .red),
+                icon: "flame.fill"
+            )
+            bodyStatusItem(
+                "Energy",
+                value: "\(Int(status.energyLevel))%",
+                color: status.energyLevel >= 60 ? .green : (status.energyLevel >= 30 ? .yellow : .red),
+                icon: "bolt.fill"
+            )
+            bodyStatusItem(
+                "Sleep",
+                value: status.formattedSleepDuration,
+                color: .indigo,
+                icon: "moon.fill"
+            )
+        }
+        .padding()
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
+
+    private func bodyStatusItem(_ label: String, value: String, color: Color, icon: String) -> some View {
+        VStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.caption)
+                .foregroundStyle(color)
+            Text(value)
+                .font(.subheadline.bold())
+                .foregroundStyle(color)
+            Text(label)
+                .font(.system(size: 9))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
     }
 
     // MARK: - Helpers

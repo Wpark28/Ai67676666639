@@ -39,5 +39,9 @@
     <string>ErgAI uses Bluetooth to connect to your Polar H10/H9 heart rate monitor for real-time HR tracking during workouts.</string>
     <key>NSBluetoothPeripheralUsageDescription</key>
     <string>ErgAI uses Bluetooth to connect to your Polar heart rate monitor.</string>
+    <key>NSHealthShareUsageDescription</key>
+    <string>ErgAI reads your Apple Watch health data (HRV, resting heart rate, blood oxygen, respiratory rate, sleep, and activity) to calculate your daily recovery score, strain level, and energy status.</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>ErgAI may write workout data to Apple Health.</string>
 </dict>
 </plist>
