@@ -47,7 +47,7 @@ const els = {
   responseText:     $('responseText'),
   typeItBtn:        $('typeItBtn'),
   regenerateBtn:    $('regenerateBtn'),
-  copyBtn:          $('copyBtn'),
+  copyBtn:          $('copyBtn')
 };
 
 let currentResponse = '';
@@ -128,7 +128,7 @@ function saveAllSettings() {
     complexity:     els.complexity.value,
     typingSpeed:    els.typingSpeed.value,
     responseLength: els.responseLength.value,
-    customPrompt:   els.customPrompt.value,
+    customPrompt:   els.customPrompt.value
   });
 }
 
@@ -139,7 +139,7 @@ async function detectAssignment() {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     const results = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
-      func: scrapeAssignment,
+      func: scrapeAssignment
     });
     const text = results?.[0]?.result;
     if (text) {
@@ -165,7 +165,7 @@ function scrapeAssignment() {
     '.pMSaOb',                         // short-answer question
     '.lRwqcd',                         // material description
     '[role="heading"]',                 // heading fallback
-    '.asQXV',                          // classwork description
+    '.asQXV'                           // classwork description
   ];
 
   for (const sel of selectors) {
@@ -217,8 +217,8 @@ async function generateAndType() {
           { role: 'user',   content: prompt.user },
         ],
         temperature: 0.85,
-        max_tokens: getMaxTokens(),
-      }),
+        max_tokens: getMaxTokens()
+      })
     });
 
     if (!res.ok) {
@@ -321,7 +321,7 @@ async function typeOnPage(text) {
     await chrome.tabs.sendMessage(tab.id, {
       action: 'typeText',
       text,
-      speed,
+      speed
     });
     setStatus('Done typing!', 100);
   } catch (err) {

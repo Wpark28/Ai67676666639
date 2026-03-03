@@ -6,11 +6,11 @@
   // ── Typing speed profiles (delay in ms per character) ─────────────────
   // Each profile defines a base range plus variation parameters
   const SPEED_PROFILES = {
-    1: { base: [180, 350], pauseChance: 0.12, pauseRange: [500, 2000], typoChance: 0.04 }, // hunt & peck
+    1: { base: [180, 350], pauseChance: 0.12, pauseRange: [500, 2000], typoChance: 0.04 },  // hunt & peck
     2: { base: [120, 250], pauseChance: 0.08, pauseRange: [400, 1200], typoChance: 0.025 },
     3: { base: [60, 150],  pauseChance: 0.05, pauseRange: [300, 900],  typoChance: 0.015 },  // normal
     4: { base: [35, 90],   pauseChance: 0.03, pauseRange: [200, 600],  typoChance: 0.008 },
-    5: { base: [20, 60],   pauseChance: 0.02, pauseRange: [150, 400],  typoChance: 0.005 },  // fast
+    5: { base: [20, 60],   pauseChance: 0.02, pauseRange: [150, 400],  typoChance: 0.005 }   // fast
   };
 
   // ── Listen for messages from the popup ────────────────────────────────
@@ -147,7 +147,7 @@
   // ── Dispatch keydown/keypress/keyup for realism ───────────────────────
   function dispatchKeyEvents(el, char, keyCode) {
     const code = keyCode || char.charCodeAt(0);
-    const opts = { key: char, code: `Key${char.toUpperCase()}`, keyCode: code, which: code, bubbles: true };
+    const opts = {key: char, code: `Key${char.toUpperCase()}`, keyCode: code, which: code, bubbles: true};
     el.dispatchEvent(new KeyboardEvent('keydown',  opts));
     el.dispatchEvent(new KeyboardEvent('keypress', opts));
     el.dispatchEvent(new KeyboardEvent('keyup',    opts));
@@ -159,7 +159,7 @@
     g: 'fhtbvy', h: 'gjynbu', i: 'uojkl', j: 'hkunmi', k: 'jlomi', l: 'kop',
     m: 'njk', n: 'bhjm', o: 'iklp', p: 'ol', q: 'wa', r: 'edft',
     s: 'adwxze', t: 'rfgy', u: 'yihj', v: 'cfgb', w: 'qase', x: 'zsdc',
-    y: 'tghu', z: 'asx',
+    y: 'tghu', z: 'asx'
   };
 
   function nearbyKey(char) {
@@ -174,7 +174,7 @@
   function scrapeAssignment() {
     const selectors = [
       '.MhXXcc', '.tLDEHd', '[data-stream-id] .dDKhVc',
-      '.GDKQ1b', '.pMSaOb', '.lRwqcd', '[role="heading"]', '.asQXV',
+      '.GDKQ1b', '.pMSaOb', '.lRwqcd', '[role="heading"]', '.asQXV'
     ];
     for (const sel of selectors) {
       const el = document.querySelector(sel);
