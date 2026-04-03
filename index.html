@@ -64,8 +64,10 @@
         .plate-item{display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--border);transition:all 0.2s;cursor:pointer;}
         .plate-item:last-child{border-bottom:none;}
         .plate-item:active{background:rgba(255,255,255,0.03);}
-        .plate-visual{width:90px;height:48px;border-radius:6px;background:#222;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;border:2px solid #555;position:relative;}
-        .plate-abbr{font-family:'Fredoka One'; font-size:1.1rem; color:#fff; text-shadow:1px 1px 2px rgba(0,0,0,0.5);}
+        .plate-visual{width:96px;height:50px;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;border:2px solid #888;position:relative;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.1),0 1px 3px rgba(0,0,0,0.4);}
+        .plate-top{font-size:0.32rem;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;line-height:1;margin-bottom:1px;}
+        .plate-abbr{font-family:'Fredoka One'; font-size:1.05rem; line-height:1.1; text-shadow:0 1px 1px rgba(0,0,0,0.2);}
+        .plate-bottom{font-size:0.28rem;font-weight:800;text-transform:uppercase;letter-spacing:0.3px;line-height:1;margin-top:1px;opacity:0.85;}
         .plate-details{flex:1;}
         .plate-title{font-size:0.85rem;font-weight:800;}
         .plate-meta{font-size:0.65rem;font-weight:700;color:var(--sub);}
@@ -257,12 +259,78 @@
             localStorage.setItem(SAVE_KEY, JSON.stringify(gameState));
         }
 
-        // Plate colors based on abbreviation (deterministic)
-        function plateColor(abbr) {
-            const colors = ['#1a5276','#7b241c','#1e8449','#6c3483','#b7950b','#a04000','#1f618d','#7d6608','#922b21','#117a65'];
-            let hash = 0;
-            for (let i = 0; i < abbr.length; i++) hash = abbr.charCodeAt(i) + ((hash << 5) - hash);
-            return colors[Math.abs(hash) % colors.length];
+        // Realistic plate styles for each state/province
+        const PLATE_STYLES = {
+            // US States - based on current plate designs
+            AL: { bg:'linear-gradient(180deg,#d42426 0%,#d42426 22%,#fff 22%,#fff 78%,#d42426 78%)', text:'#c41e22', border:'#c41e22', top:'ALABAMA', topColor:'#fff', bottom:'Heart of Dixie', bottomColor:'#c41e22' },
+            AK: { bg:'linear-gradient(180deg,#f5d000 0%,#f5d000 25%,#002868 25%)', text:'#002868', border:'#002868', top:'ALASKA', topColor:'#002868', bottom:'The Last Frontier', bottomColor:'#f5d000' },
+            AZ: { bg:'linear-gradient(180deg,#fff 0%,#fff 50%,#e8d5a3 60%,#d4883a 80%,#c25a2e 100%)', text:'#8b2500', border:'#c25a2e', top:'ARIZONA', topColor:'#c25a2e', bottom:'Grand Canyon State', bottomColor:'#8b2500' },
+            AR: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#002868', border:'#c41e22', top:'ARKANSAS', topColor:'#c41e22', bottom:'The Natural State', bottomColor:'#002868' },
+            CA: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#1a3a6b', border:'#c41e22', top:'CALIFORNIA', topColor:'#c41e22', bottom:'Golden State', bottomColor:'#1a3a6b' },
+            CO: { bg:'linear-gradient(180deg,#fff 0%,#fff 40%,#4aa564 40%)', text:'#2e5e3f', border:'#4aa564', top:'COLORADO', topColor:'#2e5e3f', bottom:'', bottomColor:'' },
+            CT: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#003478', border:'#003478', top:'CONNECTICUT', topColor:'#003478', bottom:'Constitution State', bottomColor:'#003478' },
+            DE: { bg:'linear-gradient(180deg,#f0d080 0%,#e8c55a 100%)', text:'#003478', border:'#003478', top:'DELAWARE', topColor:'#003478', bottom:'The First State', bottomColor:'#003478' },
+            FL: { bg:'linear-gradient(180deg,#fff 0%,#fff 60%,#f7941d 80%,#f15a22 100%)', text:'#006747', border:'#006747', top:'FLORIDA', topColor:'#006747', bottom:'Sunshine State', bottomColor:'#f15a22' },
+            GA: { bg:'linear-gradient(180deg,#fff 0%,#fff 60%,#e8d5a3 100%)', text:'#003478', border:'#c41e22', top:'GEORGIA', topColor:'#c41e22', bottom:'Peach State', bottomColor:'#003478' },
+            HI: { bg:'linear-gradient(180deg,#fff 0%,#e0e8f0 50%,#87CEEB 100%)', text:'#003478', border:'#003478', top:'HAWAII', topColor:'#003478', bottom:'Aloha State', bottomColor:'#003478' },
+            ID: { bg:'linear-gradient(180deg,#fff 0%,#fff 55%,#8bc34a 70%,#4caf50 100%)', text:'#1a3a6b', border:'#c41e22', top:'IDAHO', topColor:'#c41e22', bottom:'Scenic Idaho', bottomColor:'#1a3a6b' },
+            IL: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#c41e22', border:'#003478', top:'ILLINOIS', topColor:'#003478', bottom:'Land of Lincoln', bottomColor:'#003478' },
+            IN: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#003478', border:'#003478', top:'INDIANA', topColor:'#003478', bottom:'', bottomColor:'' },
+            IA: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#003478', border:'#c41e22', top:'IOWA', topColor:'#c41e22', bottom:'', bottomColor:'' },
+            KS: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#003478', border:'#003478', top:'KANSAS', topColor:'#003478', bottom:'', bottomColor:'' },
+            KY: { bg:'linear-gradient(180deg,#003f87 0%,#003f87 22%,#fff 22%,#fff 78%,#003f87 78%)', text:'#003f87', border:'#003f87', top:'KENTUCKY', topColor:'#fff', bottom:'Bluegrass State', bottomColor:'#fff' },
+            LA: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#003478', border:'#003478', top:'LOUISIANA', topColor:'#003478', bottom:'Sportsman\'s Paradise', bottomColor:'#c41e22' },
+            ME: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#003478', border:'#c41e22', top:'MAINE', topColor:'#003478', bottom:'Vacationland', bottomColor:'#003478' },
+            MD: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#003478', border:'#003478', top:'MARYLAND', topColor:'#003478', bottom:'', bottomColor:'' },
+            MA: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#c41e22', border:'#003478', top:'MASSACHUSETTS', topColor:'#003478', bottom:'The Spirit of America', bottomColor:'#003478' },
+            MI: { bg:'linear-gradient(180deg,#003f87 0%,#003f87 22%,#fff 22%,#fff 78%,#003f87 78%)', text:'#003f87', border:'#003f87', top:'MICHIGAN', topColor:'#fff', bottom:'Great Lakes', bottomColor:'#fff' },
+            MN: { bg:'linear-gradient(180deg,#003478 0%,#003478 22%,#fff 22%,#fff 78%,#003478 78%)', text:'#003478', border:'#003478', top:'MINNESOTA', topColor:'#fff', bottom:'10,000 Lakes', bottomColor:'#fff' },
+            MS: { bg:'linear-gradient(180deg,#fff 0%,#fff 50%,#4aa564 100%)', text:'#003478', border:'#003478', top:'MISSISSIPPI', topColor:'#003478', bottom:'In God We Trust', bottomColor:'#003478' },
+            MO: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#003478', border:'#003478', top:'MISSOURI', topColor:'#003478', bottom:'Show-Me State', bottomColor:'#c41e22' },
+            MT: { bg:'linear-gradient(180deg,#5c94cc 0%,#fff 40%,#fff 65%,#8bc34a 100%)', text:'#003478', border:'#003478', top:'MONTANA', topColor:'#003478', bottom:'Big Sky Country', bottomColor:'#003478' },
+            NE: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#003478', border:'#003478', top:'NEBRASKA', topColor:'#003478', bottom:'', bottomColor:'' },
+            NV: { bg:'linear-gradient(180deg,#c5d5e8 0%,#e8eef5 30%,#fff 50%,#f5e8d0 80%,#d4a855 100%)', text:'#003478', border:'#003478', top:'NEVADA', topColor:'#003478', bottom:'The Silver State', bottomColor:'#003478' },
+            NH: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#2e7d32', border:'#2e7d32', top:'NEW HAMPSHIRE', topColor:'#2e7d32', bottom:'Live Free or Die', bottomColor:'#2e7d32' },
+            NJ: { bg:'linear-gradient(180deg,#f5d000 0%,#f5d000 100%)', text:'#003478', border:'#003478', top:'NEW JERSEY', topColor:'#003478', bottom:'Garden State', bottomColor:'#003478' },
+            NM: { bg:'linear-gradient(180deg,#f5d000 0%,#f5d000 100%)', text:'#c41e22', border:'#c41e22', top:'NEW MEXICO', topColor:'#c41e22', bottom:'Land of Enchantment', bottomColor:'#c41e22' },
+            NY: { bg:'linear-gradient(180deg,#fff 0%,#fff 22%,#f5d000 22%,#f5d000 78%,#003478 78%)', text:'#003478', border:'#003478', top:'NEW YORK', topColor:'#003478', bottom:'Excelsior', bottomColor:'#fff' },
+            NC: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#c41e22', border:'#003478', top:'NORTH CAROLINA', topColor:'#c41e22', bottom:'First in Flight', bottomColor:'#003478' },
+            ND: { bg:'linear-gradient(180deg,#fff 0%,#fff 50%,#8bc34a 70%,#4caf50 85%,#2e7d32 100%)', text:'#003478', border:'#003478', top:'NORTH DAKOTA', topColor:'#003478', bottom:'Discover the Spirit', bottomColor:'#2e7d32' },
+            OH: { bg:'linear-gradient(180deg,#fff 0%,#fff 40%,#e8d5a3 60%,#87CEEB 100%)', text:'#003478', border:'#c41e22', top:'OHIO', topColor:'#c41e22', bottom:'Birthplace of Aviation', bottomColor:'#003478' },
+            OK: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#003478', border:'#003478', top:'OKLAHOMA', topColor:'#003478', bottom:'', bottomColor:'' },
+            OR: { bg:'linear-gradient(180deg,#f5d000 0%,#f5d000 22%,#003478 22%,#003478 100%)', text:'#f5d000', border:'#f5d000', top:'OREGON', topColor:'#003478', bottom:'', bottomColor:'#f5d000' },
+            PA: { bg:'linear-gradient(180deg,#003478 0%,#003478 22%,#f5d000 22%,#f5d000 78%,#003478 78%)', text:'#003478', border:'#003478', top:'PENNSYLVANIA', topColor:'#fff', bottom:'Keystone State', bottomColor:'#fff' },
+            RI: { bg:'linear-gradient(180deg,#fff 0%,#fff 55%,#87CEEB 100%)', text:'#003478', border:'#003478', top:'RHODE ISLAND', topColor:'#003478', bottom:'Ocean State', bottomColor:'#003478' },
+            SC: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#003478', border:'#003478', top:'SOUTH CAROLINA', topColor:'#003478', bottom:'', bottomColor:'' },
+            SD: { bg:'linear-gradient(180deg,#003478 0%,#003478 30%,#fff 30%,#fff 100%)', text:'#003478', border:'#003478', top:'SOUTH DAKOTA', topColor:'#fff', bottom:'Great Faces Great Places', bottomColor:'#003478' },
+            TN: { bg:'linear-gradient(180deg,#fff 0%,#fff 60%,#4aa564 100%)', text:'#003478', border:'#c41e22', top:'TENNESSEE', topColor:'#c41e22', bottom:'The Volunteer State', bottomColor:'#003478' },
+            TX: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#000', border:'#003478', top:'TEXAS', topColor:'#003478', bottom:'The Lone Star State', bottomColor:'#c41e22' },
+            UT: { bg:'linear-gradient(180deg,#fff 0%,#fff 40%,#e64a19 60%,#c62828 100%)', text:'#003478', border:'#003478', top:'UTAH', topColor:'#003478', bottom:'Life Elevated', bottomColor:'#fff' },
+            VT: { bg:'linear-gradient(180deg,#2e7d32 0%,#2e7d32 22%,#fff 22%,#fff 78%,#2e7d32 78%)', text:'#2e7d32', border:'#2e7d32', top:'VERMONT', topColor:'#fff', bottom:'Green Mountain State', bottomColor:'#fff' },
+            VA: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#003478', border:'#003478', top:'VIRGINIA', topColor:'#003478', bottom:'', bottomColor:'' },
+            WA: { bg:'linear-gradient(180deg,#fff 0%,#fff 40%,#2e7d32 60%,#1b5e20 100%)', text:'#003478', border:'#1b5e20', top:'WASHINGTON', topColor:'#003478', bottom:'Evergreen State', bottomColor:'#fff' },
+            WV: { bg:'linear-gradient(180deg,#f5d000 0%,#f5d000 22%,#fff 22%,#fff 78%,#003478 78%)', text:'#003478', border:'#003478', top:'WEST VIRGINIA', topColor:'#003478', bottom:'Wild Wonderful', bottomColor:'#f5d000' },
+            WI: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#003478', border:'#c41e22', top:'WISCONSIN', topColor:'#c41e22', bottom:'America\'s Dairyland', bottomColor:'#003478' },
+            WY: { bg:'linear-gradient(180deg,#fff 0%,#fff 50%,#f5d000 75%,#c62828 100%)', text:'#6d3a0a', border:'#6d3a0a', top:'WYOMING', topColor:'#003478', bottom:'', bottomColor:'#6d3a0a' },
+            DC: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#c41e22', border:'#c41e22', top:'WASHINGTON DC', topColor:'#003478', bottom:'Taxation Without Representation', bottomColor:'#c41e22' },
+            // Canada
+            AB: { bg:'linear-gradient(180deg,#fff 0%,#fff 55%,#e8d5a3 75%,#8bc34a 100%)', text:'#c41e22', border:'#c41e22', top:'ALBERTA', topColor:'#c41e22', bottom:'Wild Rose Country', bottomColor:'#c41e22' },
+            BC: { bg:'linear-gradient(180deg,#c41e22 0%,#c41e22 22%,#fff 22%,#fff 55%,#003478 55%)', text:'#003478', border:'#c41e22', top:'BRITISH COLUMBIA', topColor:'#fff', bottom:'Beautiful BC', bottomColor:'#fff' },
+            MB: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#003478', border:'#003478', top:'MANITOBA', topColor:'#003478', bottom:'Friendly Manitoba', bottomColor:'#003478' },
+            NB: { bg:'linear-gradient(180deg,#c41e22 0%,#c41e22 22%,#fff 22%,#fff 78%,#c41e22 78%)', text:'#c41e22', border:'#c41e22', top:'NEW BRUNSWICK', topColor:'#fff', bottom:'', bottomColor:'#fff' },
+            NL: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#003478', border:'#003478', top:'NEWFOUNDLAND', topColor:'#003478', bottom:'A World of Difference', bottomColor:'#c41e22' },
+            NS: { bg:'linear-gradient(180deg,#003478 0%,#003478 22%,#fff 22%,#fff 78%,#003478 78%)', text:'#003478', border:'#003478', top:'NOVA SCOTIA', topColor:'#fff', bottom:'Canada\'s Ocean Playground', bottomColor:'#fff' },
+            NT: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#003478', border:'#003478', top:'NW TERRITORIES', topColor:'#003478', bottom:'Spectacular', bottomColor:'#003478' },
+            NU: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#003478', border:'#c41e22', top:'NUNAVUT', topColor:'#c41e22', bottom:'Our Land', bottomColor:'#003478' },
+            ON: { bg:'linear-gradient(180deg,#003478 0%,#003478 22%,#fff 22%,#fff 78%,#003478 78%)', text:'#003478', border:'#003478', top:'ONTARIO', topColor:'#fff', bottom:'Yours to Discover', bottomColor:'#fff' },
+            PE: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#003478', border:'#c41e22', top:'PEI', topColor:'#c41e22', bottom:'Birthplace of Confederation', bottomColor:'#003478' },
+            QC: { bg:'linear-gradient(180deg,#003478 0%,#003478 22%,#fff 22%,#fff 78%,#003478 78%)', text:'#003478', border:'#003478', top:'QUÉBEC', topColor:'#fff', bottom:'Je me souviens', bottomColor:'#fff' },
+            SK: { bg:'linear-gradient(180deg,#4aa564 0%,#4aa564 22%,#fff 22%,#fff 78%,#f5d000 78%)', text:'#2e7d32', border:'#2e7d32', top:'SASKATCHEWAN', topColor:'#fff', bottom:'Land of Living Skies', bottomColor:'#2e7d32' },
+            YT: { bg:'linear-gradient(180deg,#fff 0%,#fff 100%)', text:'#003478', border:'#003478', top:'YUKON', topColor:'#003478', bottom:'Larger than Life', bottomColor:'#003478' }
+        };
+
+        function getPlateStyle(abbr) {
+            return PLATE_STYLES[abbr] || { bg:'#fff', text:'#003478', border:'#555', top:abbr, topColor:'#003478', bottom:'', bottomColor:'#003478' };
         }
 
         // Render scoreboard
@@ -357,11 +425,13 @@
                     const foundClass = found !== undefined ? `found-${found.foundBy}` : '';
                     const checkedClass = found ? 'checked' : '';
                     const player = found ? PLAYERS[found.foundBy] : null;
-                    const bg = plateColor(r.abbr);
+                    const ps = getPlateStyle(r.abbr);
 
                     html += `<div class="plate-item ${foundClass}" data-abbr="${r.abbr}">
-                        <div class="plate-visual" style="background:${bg}">
-                            <span class="plate-abbr">${r.abbr}</span>
+                        <div class="plate-visual" style="background:${ps.bg};border-color:${ps.border}">
+                            <span class="plate-top" style="color:${ps.topColor}">${ps.top}</span>
+                            <span class="plate-abbr" style="color:${ps.text}">${r.abbr}</span>
+                            <span class="plate-bottom" style="color:${ps.bottomColor}">${ps.bottom}</span>
                         </div>
                         <div class="plate-details">
                             <div class="plate-title">${r.name}</div>
