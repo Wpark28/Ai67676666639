@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="Plate Hunt!"/>
+    <meta name="theme-color" content="#0d1117"/>
+    <title>🚗 Plate Hunt Family!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+    <style>
+        :root{
+            --bg:#0d1117;--surface:#161b22;--card:#1c2333;--border:rgba(255,255,255,0.08);
+            --accent:#f0a500;--green:#56d364;--red:#f85149;--blue:#58a6ff;--purple:#bc8cff;
+            --text:#e6edf3;--sub:#8b949e;
+            --p0:#ff6b6b; --p1:#4ecdc4; --p2:#ffe66d;
+        }
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Baloo 2',cursive;background:var(--bg);color:var(--text);min-height:100vh; -webkit-tap-highlight-color:transparent; overflow-x: hidden;}
+
+        .road-bg{position:fixed;inset:0;z-index:0;overflow:hidden;background:linear-gradient(180deg,#0d1117 0%,#111820 100%);}
+        .road-line{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:6px;
+            background:repeating-linear-gradient(180deg,#f0a500 0,#f0a500 30px,transparent 30px,transparent 60px);
+            height:200px;opacity:0.15;animation:roadScroll 1s linear infinite;}
+        @keyframes roadScroll{to{background-position:0 60px;}}
+
+        header{position:sticky;top:0;z-index:200;background:rgba(13,17,23,0.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+        .header-top{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 6px;}
+        .logo{font-family:'Fredoka One',cursive;font-size:1.4rem;color:var(--accent);display:flex;align-items:center;gap:6px;}
+
+        .scoreboard{display:flex;gap:6px;padding:6px 14px 10px;}
+        .player-score{flex:1;display:flex;align-items:center;gap:6px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:6px 10px;}
+        .player-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;}
+        .p-name{font-size:0.72rem;font-weight:800;color:var(--sub);}
+        .p-pts{font-size:0.85rem;font-weight:800;}
+
+        .progress-wrap{height:4px;background:var(--surface);}
+        .progress-fill{height:100%;background:var(--accent);transition:width 0.5s ease;}
+
+        .controls{position:relative;z-index:1;padding:12px 14px 0;max-width:760px;margin:0 auto;}
+        .search-box{position:relative;margin-bottom:8px;}
+        .search-box input{width:100%;padding:10px 14px 10px 40px;background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--text);outline:none;font-size:0.9rem; font-family: inherit;}
+        .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);}
+
+        .filter-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none;}
+        .filter-row::-webkit-scrollbar { display: none; }
+        .chip{flex-shrink:0;padding:5px 13px;background:var(--surface);border:1px solid var(--border);border-radius:20px;color:var(--sub);font-size:0.78rem;font-weight:700;cursor:pointer;font-family:inherit;}
+        .chip.active{background:var(--accent);color:#000;border-color:var(--accent);}
+
+        .main{position:relative;z-index:1;padding:12px 12px 130px;max-width:760px;margin:0 auto;}
+        .state-section{margin-bottom:12px;}
+        .state-header{display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:14px;cursor:pointer;user-select:none;}
+        .state-header.has-open{border-radius:14px 14px 0 0;}
+        .state-info{display:flex;align-items:center;gap:10px;}
+        .state-flag{font-size:1.2rem;}
+        .state-name{font-weight:800;font-size:0.9rem;}
+        .state-count{font-size:0.7rem;font-weight:700;color:var(--sub);}
+        .state-chevron{transition:transform 0.2s;font-size:0.8rem;color:var(--sub);}
+        .state-chevron.open{transform:rotate(180deg);}
+        .plates-row{display:none;flex-direction:column;background:var(--card);border-radius:0 0 14px 14px;margin-top:0;border:1px solid var(--border);border-top:none;}
+        .plates-row.open{display:flex;}
+
+        .plate-item{display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--border);transition:all 0.2s;cursor:pointer;}
+        .plate-item:last-child{border-bottom:none;}
+        .plate-item:active{background:rgba(255,255,255,0.03);}
+        .plate-visual{width:90px;height:48px;border-radius:6px;background:#222;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;border:2px solid #555;position:relative;}
+        .plate-abbr{font-family:'Fredoka One'; font-size:1.1rem; color:#fff; text-shadow:1px 1px 2px rgba(0,0,0,0.5);}
+        .plate-details{flex:1;}
+        .plate-title{font-size:0.85rem;font-weight:800;}
+        .plate-meta{font-size:0.65rem;font-weight:700;color:var(--sub);}
+        .plate-check{width:32px;height:32px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.9rem;background:transparent;}
+        .plate-check.checked{border-color:var(--green);background:var(--green);color:#000;}
+
+        .found-0{border-left:4px solid var(--p0); background:rgba(255,107,107,0.05);}
+        .found-1{border-left:4px solid var(--p1); background:rgba(78,205,196,0.05);}
+        .found-2{border-left:4px solid var(--p2); background:rgba(255,230,109,0.05);}
+
+        .picker-overlay{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.8);backdrop-filter:blur(4px);align-items:flex-end;}
+        .picker-overlay.show{display:flex;}
+        .picker-sheet{background:var(--surface);width:100%;max-width:760px;margin:0 auto;padding:20px;border-radius:20px 20px 0 0;animation:slideUp 0.3s ease-out;}
+        @keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+        .picker-title{margin-bottom:6px;text-align:center;font-size:1.1rem;font-weight:800;}
+        .picker-plate-name{text-align:center;color:var(--accent);font-weight:700;margin-bottom:15px;font-size:0.9rem;}
+        .picker-btn{width:100%;display:flex;align-items:center;gap:15px;padding:15px;margin-bottom:10px;border:1px solid var(--border);border-radius:12px;background:none;color:#fff;font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;transition:background 0.15s;}
+        .picker-btn:active{background:rgba(255,255,255,0.05);}
+        .picker-btn .avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
+        .picker-cancel{width:100%;padding:14px;border:none;border-radius:12px;background:var(--red);color:#fff;font-family:inherit;font-size:1rem;font-weight:800;cursor:pointer;margin-top:5px;}
+        .picker-unmark{width:100%;padding:14px;border:none;border-radius:12px;background:var(--card);color:var(--sub);font-family:inherit;font-size:0.85rem;font-weight:700;cursor:pointer;margin-top:8px;}
+
+        .bottom-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:760px;background:rgba(13,17,23,0.95);backdrop-filter:blur(12px);padding:15px;display:flex;gap:10px;z-index:300;border-top:1px solid var(--border);}
+        .btn-reset{flex:1;padding:12px;border-radius:12px;background:var(--surface);color:var(--red);border:1px solid var(--red);font-family:inherit;font-weight:800;cursor:pointer;font-size:0.9rem;}
+        .btn-reset:active{background:rgba(248,81,73,0.1);}
+
+        .confetti-piece{position:fixed;width:8px;height:8px;z-index:999;border-radius:2px;animation:fall 1.2s linear forwards;pointer-events:none;}
+        @keyframes fall{to{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+
+        .completion-banner{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:500;background:var(--surface);border:2px solid var(--accent);border-radius:24px;padding:30px 40px;text-align:center;animation:popIn 0.4s ease-out;}
+        @keyframes popIn{from{transform:translate(-50%,-50%) scale(0.5);opacity:0;}to{transform:translate(-50%,-50%) scale(1);opacity:1;}}
+        .completion-banner h2{font-family:'Fredoka One';font-size:1.5rem;color:var(--accent);margin-bottom:8px;}
+        .completion-banner p{color:var(--sub);font-weight:700;}
+        .completion-banner button{margin-top:15px;padding:10px 30px;border:none;border-radius:10px;background:var(--accent);color:#000;font-family:inherit;font-weight:800;font-size:1rem;cursor:pointer;}
+
+        .empty-msg{text-align:center;padding:40px 20px;color:var(--sub);font-weight:700;}
+    </style>
+</head>
+<body>
+    <div class="road-bg"><div class="road-line"></div></div>
+
+    <header>
+        <div class="header-top">
+            <div class="logo">🚗 Plate Hunt!</div>
+            <div id="totalPill" style="font-size:0.75rem; font-weight:800; color:var(--accent);">0 / 0 PLATES</div>
+        </div>
+        <div class="scoreboard" id="scoreboard"></div>
+        <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </header>
+
+    <div class="controls">
+        <div class="search-box">
+            <span class="search-icon">🔎</span>
+            <input type="text" id="searchInput" placeholder="Search states or plates..."/>
+        </div>
+        <div class="filter-row" id="filterRow">
+            <button class="chip active" data-f="all">🗺️ All</button>
+            <button class="chip" data-f="found">✅ Found</button>
+            <button class="chip" data-f="missing">🔍 Missing</button>
+            <button class="chip" data-f="us">🇺🇸 USA</button>
+            <button class="chip" data-f="canada">🇨🇦 Canada</button>
+            <button class="chip" data-f="p0">👦 Johnny</button>
+            <button class="chip" data-f="p1">👩 Mom</button>
+            <button class="chip" data-f="p2">👨 Dad</button>
+        </div>
+    </div>
+
+    <div class="main" id="mainGrid"></div>
+
+    <div class="bottom-bar">
+        <button class="btn-reset" id="resetBtn">🔄 Reset Game</button>
+    </div>
+
+    <!-- Player Picker Modal -->
+    <div class="picker-overlay" id="pickerOverlay">
+        <div class="picker-sheet">
+            <div class="picker-title">🎉 Who found it?</div>
+            <div class="picker-plate-name" id="pickerPlateName"></div>
+            <div id="pickerButtons"></div>
+            <button class="picker-unmark" id="pickerUnmark" style="display:none;">Remove mark</button>
+            <button class="picker-cancel" id="pickerCancel">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Completion Banner -->
+    <div class="completion-banner" id="completionBanner">
+        <h2>🏆 ALL PLATES FOUND!</h2>
+        <p>Amazing road trip! You found every plate!</p>
+        <button onclick="document.getElementById('completionBanner').style.display='none'">Awesome!</button>
+    </div>
+
+    <script>
+    (function(){
+        // Players
+        const PLAYERS = [
+            { name: 'Johnny', emoji: '👦', color: 'var(--p0)' },
+            { name: 'Mom',    emoji: '👩', color: 'var(--p1)' },
+            { name: 'Dad',    emoji: '👨', color: 'var(--p2)' }
+        ];
+
+        // All US states + DC + Canada provinces
+        const REGIONS = [
+            // US States
+            { abbr:'AL', name:'Alabama',        country:'us', motto:'Heart of Dixie' },
+            { abbr:'AK', name:'Alaska',          country:'us', motto:'The Last Frontier' },
+            { abbr:'AZ', name:'Arizona',         country:'us', motto:'Grand Canyon State' },
+            { abbr:'AR', name:'Arkansas',        country:'us', motto:'The Natural State' },
+            { abbr:'CA', name:'California',      country:'us', motto:'Golden State' },
+            { abbr:'CO', name:'Colorado',        country:'us', motto:'Centennial State' },
+            { abbr:'CT', name:'Connecticut',     country:'us', motto:'Constitution State' },
+            { abbr:'DE', name:'Delaware',        country:'us', motto:'The First State' },
+            { abbr:'FL', name:'Florida',         country:'us', motto:'Sunshine State' },
+            { abbr:'GA', name:'Georgia',         country:'us', motto:'Peach State' },
+            { abbr:'HI', name:'Hawaii',          country:'us', motto:'Aloha State' },
+            { abbr:'ID', name:'Idaho',           country:'us', motto:'Gem State' },
+            { abbr:'IL', name:'Illinois',        country:'us', motto:'Prairie State' },
+            { abbr:'IN', name:'Indiana',         country:'us', motto:'Hoosier State' },
+            { abbr:'IA', name:'Iowa',            country:'us', motto:'Hawkeye State' },
+            { abbr:'KS', name:'Kansas',          country:'us', motto:'Sunflower State' },
+            { abbr:'KY', name:'Kentucky',        country:'us', motto:'Bluegrass State' },
+            { abbr:'LA', name:'Louisiana',       country:'us', motto:'Pelican State' },
+            { abbr:'ME', name:'Maine',           country:'us', motto:'Vacationland' },
+            { abbr:'MD', name:'Maryland',        country:'us', motto:'Old Line State' },
+            { abbr:'MA', name:'Massachusetts',   country:'us', motto:'Bay State' },
+            { abbr:'MI', name:'Michigan',        country:'us', motto:'Great Lakes State' },
+            { abbr:'MN', name:'Minnesota',       country:'us', motto:'North Star State' },
+            { abbr:'MS', name:'Mississippi',     country:'us', motto:'Magnolia State' },
+            { abbr:'MO', name:'Missouri',        country:'us', motto:'Show-Me State' },
+            { abbr:'MT', name:'Montana',         country:'us', motto:'Treasure State' },
+            { abbr:'NE', name:'Nebraska',        country:'us', motto:'Cornhusker State' },
+            { abbr:'NV', name:'Nevada',          country:'us', motto:'Silver State' },
+            { abbr:'NH', name:'New Hampshire',   country:'us', motto:'Granite State' },
+            { abbr:'NJ', name:'New Jersey',      country:'us', motto:'Garden State' },
+            { abbr:'NM', name:'New Mexico',      country:'us', motto:'Land of Enchantment' },
+            { abbr:'NY', name:'New York',        country:'us', motto:'Empire State' },
+            { abbr:'NC', name:'North Carolina',  country:'us', motto:'Tar Heel State' },
+            { abbr:'ND', name:'North Dakota',    country:'us', motto:'Peace Garden State' },
+            { abbr:'OH', name:'Ohio',            country:'us', motto:'Buckeye State' },
+            { abbr:'OK', name:'Oklahoma',        country:'us', motto:'Sooner State' },
+            { abbr:'OR', name:'Oregon',          country:'us', motto:'Beaver State' },
+            { abbr:'PA', name:'Pennsylvania',    country:'us', motto:'Keystone State' },
+            { abbr:'RI', name:'Rhode Island',    country:'us', motto:'Ocean State' },
+            { abbr:'SC', name:'South Carolina',  country:'us', motto:'Palmetto State' },
+            { abbr:'SD', name:'South Dakota',    country:'us', motto:'Mount Rushmore State' },
+            { abbr:'TN', name:'Tennessee',       country:'us', motto:'Volunteer State' },
+            { abbr:'TX', name:'Texas',           country:'us', motto:'Lone Star State' },
+            { abbr:'UT', name:'Utah',            country:'us', motto:'Beehive State' },
+            { abbr:'VT', name:'Vermont',         country:'us', motto:'Green Mountain State' },
+            { abbr:'VA', name:'Virginia',        country:'us', motto:'Old Dominion' },
+            { abbr:'WA', name:'Washington',      country:'us', motto:'Evergreen State' },
+            { abbr:'WV', name:'West Virginia',   country:'us', motto:'Mountain State' },
+            { abbr:'WI', name:'Wisconsin',       country:'us', motto:'Badger State' },
+            { abbr:'WY', name:'Wyoming',         country:'us', motto:'Equality State' },
+            { abbr:'DC', name:'Washington D.C.', country:'us', motto:'Nation\'s Capital' },
+            // Canada
+            { abbr:'AB', name:'Alberta',              country:'canada', motto:'Wild Rose Country' },
+            { abbr:'BC', name:'British Columbia',     country:'canada', motto:'Beautiful British Columbia' },
+            { abbr:'MB', name:'Manitoba',             country:'canada', motto:'Friendly Manitoba' },
+            { abbr:'NB', name:'New Brunswick',        country:'canada', motto:'Picture Province' },
+            { abbr:'NL', name:'Newfoundland',         country:'canada', motto:'A World of Difference' },
+            { abbr:'NS', name:'Nova Scotia',          country:'canada', motto:'Canada\'s Ocean Playground' },
+            { abbr:'NT', name:'Northwest Territories',country:'canada', motto:'Spectacular NWT' },
+            { abbr:'NU', name:'Nunavut',              country:'canada', motto:'Our Land' },
+            { abbr:'ON', name:'Ontario',              country:'canada', motto:'Yours to Discover' },
+            { abbr:'PE', name:'Prince Edward Island', country:'canada', motto:'Birthplace of Confederation' },
+            { abbr:'QC', name:'Quebec',               country:'canada', motto:'Je me souviens' },
+            { abbr:'SK', name:'Saskatchewan',         country:'canada', motto:'Land of Living Skies' },
+            { abbr:'YT', name:'Yukon',                country:'canada', motto:'Larger than Life' }
+        ];
+
+        const TOTAL = REGIONS.length;
+        const SAVE_KEY = 'plateHuntData';
+
+        // State: { [abbr]: { foundBy: playerIndex, timestamp: number } }
+        let gameState = {};
+        let currentFilter = 'all';
+        let searchQuery = '';
+        let openSections = {};
+        let selectedPlate = null;
+
+        // Load/Save
+        function load() {
+            try {
+                const d = localStorage.getItem(SAVE_KEY);
+                if (d) gameState = JSON.parse(d);
+            } catch(e) { gameState = {}; }
+        }
+        function save() {
+            localStorage.setItem(SAVE_KEY, JSON.stringify(gameState));
+        }
+
+        // Plate colors based on abbreviation (deterministic)
+        function plateColor(abbr) {
+            const colors = ['#1a5276','#7b241c','#1e8449','#6c3483','#b7950b','#a04000','#1f618d','#7d6608','#922b21','#117a65'];
+            let hash = 0;
+            for (let i = 0; i < abbr.length; i++) hash = abbr.charCodeAt(i) + ((hash << 5) - hash);
+            return colors[Math.abs(hash) % colors.length];
+        }
+
+        // Render scoreboard
+        function renderScoreboard() {
+            const sb = document.getElementById('scoreboard');
+            sb.innerHTML = PLAYERS.map((p, i) => {
+                const count = Object.values(gameState).filter(v => v.foundBy === i).length;
+                return `<div class="player-score" style="border-color:${p.color}">
+                    <div class="player-avatar" style="background:${p.color}">${p.emoji}</div>
+                    <div><div class="p-name">${p.name}</div><div class="p-pts">${count}</div></div>
+                </div>`;
+            }).join('');
+        }
+
+        // Render progress
+        function renderProgress() {
+            const found = Object.keys(gameState).length;
+            document.getElementById('totalPill').textContent = `${found} / ${TOTAL} PLATES`;
+            document.getElementById('progressFill').style.width = `${(found/TOTAL)*100}%`;
+        }
+
+        // Filter regions
+        function getFilteredRegions() {
+            let list = REGIONS;
+
+            // Country filter
+            if (currentFilter === 'us') list = list.filter(r => r.country === 'us');
+            else if (currentFilter === 'canada') list = list.filter(r => r.country === 'canada');
+
+            // Found/missing filter
+            if (currentFilter === 'found') list = list.filter(r => gameState[r.abbr]);
+            else if (currentFilter === 'missing') list = list.filter(r => !gameState[r.abbr]);
+
+            // Player filter
+            if (currentFilter === 'p0') list = list.filter(r => gameState[r.abbr] && gameState[r.abbr].foundBy === 0);
+            if (currentFilter === 'p1') list = list.filter(r => gameState[r.abbr] && gameState[r.abbr].foundBy === 1);
+            if (currentFilter === 'p2') list = list.filter(r => gameState[r.abbr] && gameState[r.abbr].foundBy === 2);
+
+            // Search
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                list = list.filter(r => r.name.toLowerCase().includes(q) || r.abbr.toLowerCase().includes(q) || r.motto.toLowerCase().includes(q));
+            }
+
+            return list;
+        }
+
+        // Group by country
+        function groupByCountry(regions) {
+            const groups = {};
+            regions.forEach(r => {
+                const label = r.country === 'us' ? '🇺🇸 United States' : '🇨🇦 Canada';
+                if (!groups[label]) groups[label] = [];
+                groups[label].push(r);
+            });
+            return groups;
+        }
+
+        // Render main grid
+        function renderGrid() {
+            const grid = document.getElementById('mainGrid');
+            const filtered = getFilteredRegions();
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="empty-msg">No plates match your search.</div>';
+                return;
+            }
+
+            const groups = groupByCountry(filtered);
+            let html = '';
+
+            for (const [groupName, regions] of Object.entries(groups)) {
+                const foundInGroup = regions.filter(r => gameState[r.abbr]).length;
+                const key = groupName;
+                const isOpen = openSections[key];
+
+                html += `<div class="state-section">
+                    <div class="state-header ${isOpen ? 'has-open' : ''}" data-group="${key}">
+                        <div class="state-info">
+                            <span class="state-flag">${groupName.split(' ')[0]}</span>
+                            <span class="state-name">${groupName.substring(groupName.indexOf(' ') + 1)}</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <span class="state-count">${foundInGroup}/${regions.length}</span>
+                            <span class="state-chevron ${isOpen ? 'open' : ''}">▼</span>
+                        </div>
+                    </div>
+                    <div class="plates-row ${isOpen ? 'open' : ''}">`;
+
+                regions.forEach(r => {
+                    const found = gameState[r.abbr];
+                    const foundClass = found !== undefined ? `found-${found.foundBy}` : '';
+                    const checkedClass = found ? 'checked' : '';
+                    const player = found ? PLAYERS[found.foundBy] : null;
+                    const bg = plateColor(r.abbr);
+
+                    html += `<div class="plate-item ${foundClass}" data-abbr="${r.abbr}">
+                        <div class="plate-visual" style="background:${bg}">
+                            <span class="plate-abbr">${r.abbr}</span>
+                        </div>
+                        <div class="plate-details">
+                            <div class="plate-title">${r.name}</div>
+                            <div class="plate-meta" style="color:${found ? player.color : 'var(--sub)'}">
+                                ${found ? `${player.emoji} Found by ${player.name}` : r.motto}
+                            </div>
+                        </div>
+                        <div class="plate-check ${checkedClass}">${found ? '✓' : ''}</div>
+                    </div>`;
+                });
+
+                html += '</div></div>';
+            }
+
+            grid.innerHTML = html;
+
+            // Bind section headers
+            grid.querySelectorAll('.state-header').forEach(h => {
+                h.addEventListener('click', () => {
+                    const key = h.dataset.group;
+                    openSections[key] = !openSections[key];
+                    renderGrid();
+                });
+            });
+
+            // Bind plate items
+            grid.querySelectorAll('.plate-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    selectedPlate = item.dataset.abbr;
+                    openPicker(selectedPlate);
+                });
+            });
+        }
+
+        // Picker modal
+        function openPicker(abbr) {
+            const region = REGIONS.find(r => r.abbr === abbr);
+            const overlay = document.getElementById('pickerOverlay');
+            const plateName = document.getElementById('pickerPlateName');
+            const buttons = document.getElementById('pickerButtons');
+            const unmark = document.getElementById('pickerUnmark');
+
+            plateName.textContent = `${region.name} (${region.abbr})`;
+
+            buttons.innerHTML = PLAYERS.map((p, i) => {
+                return `<button class="picker-btn" data-player="${i}">
+                    <div class="avatar" style="background:${p.color}">${p.emoji}</div>
+                    <span>${p.name}</span>
+                </button>`;
+            }).join('');
+
+            // Show unmark if already found
+            if (gameState[abbr]) {
+                unmark.style.display = 'block';
+            } else {
+                unmark.style.display = 'none';
+            }
+
+            overlay.classList.add('show');
+
+            // Bind player buttons
+            buttons.querySelectorAll('.picker-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const pi = parseInt(btn.dataset.player);
+                    gameState[abbr] = { foundBy: pi, timestamp: Date.now() };
+                    save();
+                    closePicker();
+                    spawnConfetti();
+                    renderAll();
+                    checkCompletion();
+                });
+            });
+
+            // Unmark
+            unmark.onclick = () => {
+                delete gameState[abbr];
+                save();
+                closePicker();
+                renderAll();
+            };
+        }
+
+        function closePicker() {
+            document.getElementById('pickerOverlay').classList.remove('show');
+            selectedPlate = null;
+        }
+
+        // Confetti
+        function spawnConfetti() {
+            const colors = ['#ff6b6b','#4ecdc4','#ffe66d','#f0a500','#56d364','#58a6ff','#bc8cff'];
+            for (let i = 0; i < 30; i++) {
+                const el = document.createElement('div');
+                el.className = 'confetti-piece';
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.top = -10 + 'px';
+                el.style.background = colors[Math.floor(Math.random() * colors.length)];
+                el.style.animationDelay = Math.random() * 0.5 + 's';
+                el.style.animationDuration = (0.8 + Math.random() * 0.8) + 's';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 2000);
+            }
+        }
+
+        // Check completion
+        function checkCompletion() {
+            if (Object.keys(gameState).length >= TOTAL) {
+                document.getElementById('completionBanner').style.display = 'block';
+                for (let i = 0; i < 5; i++) setTimeout(spawnConfetti, i * 300);
+            }
+        }
+
+        // Render all
+        function renderAll() {
+            renderScoreboard();
+            renderProgress();
+            renderGrid();
+        }
+
+        // Filter chips
+        document.getElementById('filterRow').addEventListener('click', e => {
+            const chip = e.target.closest('.chip');
+            if (!chip) return;
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            currentFilter = chip.dataset.f;
+            renderGrid();
+        });
+
+        // Search
+        document.getElementById('searchInput').addEventListener('input', e => {
+            searchQuery = e.target.value;
+            renderGrid();
+        });
+
+        // Cancel picker
+        document.getElementById('pickerCancel').addEventListener('click', closePicker);
+        document.getElementById('pickerOverlay').addEventListener('click', e => {
+            if (e.target === document.getElementById('pickerOverlay')) closePicker();
+        });
+
+        // Reset
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            if (confirm('Reset all progress? This cannot be undone!')) {
+                gameState = {};
+                save();
+                openSections = {};
+                renderAll();
+            }
+        });
+
+        // Init
+        load();
+        // Open US section by default
+        openSections['🇺🇸 United States'] = true;
+        renderAll();
+    })();
+    </script>
+</body>
+</html>
